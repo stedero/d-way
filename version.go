@@ -2,4 +2,4 @@
 // The version number will be replaced by the one defined in ConMan.
 package main
 
-const version = "1.0"
+const version = "0.0.1"

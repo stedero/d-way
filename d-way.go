@@ -1,6 +1,7 @@
 package main
 
 import (
+	"html"
 	"log"
 	"net/http"
 
@@ -18,6 +19,7 @@ func handle(w http.ResponseWriter, r *http.Request) {
 	log.Printf("method: %s: %s", r.Method, r.RequestURI)
 	switch r.Method {
 	case "GET":
+		log.Printf("We got: %q", html.EscapeString(r.URL.Path))
 		showForm(w)
 	case "POST":
 		process(w, r)
