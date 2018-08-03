@@ -1,0 +1,26 @@
+{
+    "comment": "__CONMAN_HEADER__",
+    "rules": [
+        {
+            "regex": "/data/tns/docs/html/.*\\.html",
+            "process": [
+                "GET",
+                "CLEAN",
+                "TAG"
+            ]
+        },
+        {
+            "regex": "/data/tns/docs/pdf/.*\\.pdf*",
+            "process": [
+                "GET",
+                "SDRM"
+            ]
+        },
+        {
+            "regex": ".*",
+            "process": [
+                "GET"
+            ]
+        }
+    ]
+}

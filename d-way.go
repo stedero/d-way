@@ -34,24 +34,6 @@ func handle(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func showForm(w http.ResponseWriter) {
-	form := `<html>
-				<head>
-					<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-					<title>D-way - Document Gateway</title>
-				</head>
-				<body>
-					<h1>D-way - Document Gateway</h1>
-					<form action="/" method="post" enctype="multipart/form-data">
-						<p>Provide a document path</p>
-						<input type="text" name="url" size="100"><br><br>
-						<input type="submit">
-					</form>
-				</body>
-			</html>`
-	w.Write([]byte(form))
-}
-
 func process(w http.ResponseWriter, r *http.Request) {
 	logHeaders(r)
 	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
