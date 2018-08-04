@@ -25,7 +25,7 @@ func main() {
 	server.ListenAndServe()
 }
 
-func docHandler(matcher *rule.Matcher) func(http.ResponseWriter, *http.Request) {
+func docHandler(matcher *rule.Matcher) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "GET":
