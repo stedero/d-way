@@ -1,9 +1,9 @@
 package act
 
 import (
-	"io/ioutil"
+	"io"
 	"log"
-	"strings"
+	"os"
 
 	"ibfd.org/d-way/doc"
 )
@@ -12,12 +12,10 @@ import (
 type ActionGet struct {
 }
 
-var host string
 var publicationsBasePath string
 
 func init() {
-	host = "https://dev-online.ibfd.org"
-	publicationsBasePath = "/collections"
+	publicationsBasePath = "/Users/steef/Desktop/d-way"
 }
 
 // NewActionGet creates a document fetcher.
@@ -26,14 +24,8 @@ func NewActionGet() *ActionGet {
 }
 
 // Get fetches a document.
-func (action *ActionGet) Get(document *doc.Document) ([]byte, error) {
-	target := host + publicationsBasePath + strings.TrimPrefix(document.Path, "/data")
+func (action *ActionGet) Get(document *doc.Document) (io.Reader, error) {
+	target := publicationsBasePath + document.Path
 	log.Printf("Fetching: %s", target)
-	client := NewHTTPClient()
-	response, err := client.Get(target)
-	if err != nil {
-		return nil, err
-	}
-	//	response.StatusCode
-	return ioutil.ReadAll(response.Body)
+	return os.Open(target)
 }
