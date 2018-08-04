@@ -7,20 +7,20 @@ import (
 	"ibfd.org/d-way/doc"
 )
 
-// Rule defines process rules
+// Rule defines a process rule.
 type Rule struct {
 	Regex     string `json:"regex"`
 	Regexc    *regexp.Regexp
 	Processes []string `json:"process"`
 }
 
-// Matcher defines the rules to match paths
+// Matcher defines the rules to match paths.
 type Matcher struct {
 	Comment string  `json:"comment"`
 	Rules   []*Rule `json:"rules"`
 }
 
-// NewMatcher creates a Matcher
+// NewMatcher creates a Matcher.
 func NewMatcher(data []byte) (*Matcher, error) {
 	var matcher Matcher
 	err := json.Unmarshal(data, &matcher)
@@ -37,7 +37,7 @@ func (matcher *Matcher) compileRules() {
 	}
 }
 
-// Match finds a rule that matches path
+// Match finds the first rule that matches a document path.
 func (matcher *Matcher) Match(d *doc.Document) *Rule {
 	for _, rule := range matcher.Rules {
 		if rule.Regexc.Match([]byte(d.Path)) {
