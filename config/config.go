@@ -34,12 +34,12 @@ func init() {
 	log.Printf("loaded configuration from %s", configFilePath)
 }
 
-// GetMatcher return the configuration
+// GetMatcher returns the rule matcher.
 func GetMatcher() *rule.Matcher {
 	return matcher
 }
 
-// GetPort returns the port to use for this service
+// GetPort returns the port to use for this service.
 func GetPort() string {
 	port := os.Getenv("PORT")
 	if port == "" {
