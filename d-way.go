@@ -13,6 +13,8 @@ import (
 	"ibfd.org/d-way/config"
 )
 
+const pathPrefix = "/d-way"
+
 func main() {
 	server := http.Server{Addr: ":" + cfg.GetPort()}
 	log.Printf("d-way %s started on %s", version, server.Addr)
@@ -27,15 +29,15 @@ func docHandler(matcher *rule.Matcher) func(http.ResponseWriter, *http.Request) 
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "GET":
-			if !strings.HasPrefix(r.URL.Path, "/d-way") {
+			if !strings.HasPrefix(r.URL.Path, pathPrefix) {
 				notFound(w, r.URL.Path)
 			} else {
-				path := strings.TrimPrefix(r.URL.Path, "/d-way")
+				path := strings.TrimPrefix(r.URL.Path, pathPrefix)
 				document := doc.NewDocument(path)
 				rule := matcher.Match(document)
 				w.Header().Set("Content-Type", "text/plain")
 				w.WriteHeader(200)
-				fmt.Fprintf(w, "We got : %s\n", document)
+				fmt.Fprintf(w, "Got    : %s\n", document)
 				fmt.Fprintf(w, "Matched: %s\n", rule.Regex)
 				job := prc.NewJob(document, rule)
 				prc.Exec(job, w)
