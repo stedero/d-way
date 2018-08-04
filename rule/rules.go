@@ -31,12 +31,6 @@ func NewMatcher(data []byte) (*Matcher, error) {
 	return &matcher, err
 }
 
-func (matcher *Matcher) compileRules() {
-	for _, rule := range matcher.Rules {
-		rule.Regexc = regexp.MustCompile(rule.Regex)
-	}
-}
-
 // Match finds the first rule that matches a document path.
 func (matcher *Matcher) Match(d *doc.Document) *Rule {
 	for _, rule := range matcher.Rules {
@@ -45,4 +39,10 @@ func (matcher *Matcher) Match(d *doc.Document) *Rule {
 		}
 	}
 	return matcher.Rules[len(matcher.Rules)-1]
+}
+
+func (matcher *Matcher) compileRules() {
+	for _, rule := range matcher.Rules {
+		rule.Regexc = regexp.MustCompile(rule.Regex)
+	}
 }
