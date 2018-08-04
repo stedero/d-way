@@ -28,10 +28,9 @@ func handler(matcher *rule.Matcher) func(http.ResponseWriter, *http.Request) {
 		case "GET":
 			w.Header().Set("Content-Type", "text/plain")
 			w.WriteHeader(200)
-			document := doc.NewDocument(strings.TrimPrefix(r.URL.Path, "/d-way"))
+			path := strings.TrimPrefix(r.URL.Path, "/d-way")
+			document := doc.NewDocument(path)
 			rule := matcher.Match(document)
-			log.Printf("We got : %s", document)
-			log.Printf("Matched: %s", rule.Regex)
 			fmt.Fprintf(w, "We got : %s\n", document)
 			fmt.Fprintf(w, "Matched: %s\n", rule.Regex)
 			job := prc.NewJob(document, rule)
