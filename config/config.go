@@ -16,18 +16,20 @@ const defaultConfigFilePath = "config.json"
 
 var configFilePath string
 var matcher *rule.Matcher
+var configData []byte
 
 func init() {
+	var err error
 	flag.Parse()
 	configFilePath = flag.Arg(0)
 	if configFilePath == "" {
 		configFilePath = defaultConfigFilePath
 	}
-	data, err := ioutil.ReadFile(configFilePath)
+	configData, err = ioutil.ReadFile(configFilePath)
 	if err != nil {
 		log.Fatalf("fail to read file %s: %v", configFilePath, err)
 	}
-	matcher, err = rule.NewMatcher(data)
+	matcher, err = rule.NewMatcher(configData)
 	if err != nil {
 		log.Fatalf("fail to unmarshal from file %s: %v", configFilePath, err)
 	}
@@ -50,4 +52,9 @@ func GetPort() string {
 		}
 	}
 	return port
+}
+
+// GetConfigData provides the content of the config file.
+func GetConfigData() []byte {
+	return configData
 }
