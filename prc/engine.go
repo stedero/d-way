@@ -10,7 +10,7 @@ import (
 // Exec executes all processes for a document
 func Exec(job *Job, writer io.Writer) {
 	fmt.Fprintf(writer, "Starting job for: %s\n", job.document)
-	var reader io.Reader
+	var reader io.ReadCloser
 	var err error
 	for i, process := range job.rule.Processes {
 		fmt.Fprintf(writer, "executing step %d %s\n", i+1, process)
@@ -34,5 +34,6 @@ func Exec(job *Job, writer io.Writer) {
 	if err != nil {
 		fmt.Fprintf(writer, "error copying %s: %v\n", job.document, err)
 	}
+	reader.Close()
 	fmt.Fprintf(writer, "\nFinished job\n")
 }

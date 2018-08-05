@@ -24,7 +24,7 @@ func NewActionGet() *ActionGet {
 }
 
 // Get fetches a document.
-func (action *ActionGet) Get(document *doc.Document) (io.Reader, error) {
+func (action *ActionGet) Get(document *doc.Document) (io.ReadCloser, error) {
 	target := publicationsBasePath + document.Path
 	log.Printf("Fetching: %s", target)
 	return os.Open(target)

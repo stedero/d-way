@@ -18,10 +18,11 @@ func NewActionSan() *ActionSan {
 }
 
 // Sanitize calls the sanitizer service to clean a HTML document
-func (action *ActionSan) Sanitize(r io.Reader) (io.Reader, error) {
+func (action *ActionSan) Sanitize(r io.ReadCloser) (io.ReadCloser, error) {
 	response, err := action.httpClient.Post(docsanURL, "Content-type: text/html", r)
 	if err != nil {
 		return nil, err
 	}
+	r.Close()
 	return response.Body, err
 }
