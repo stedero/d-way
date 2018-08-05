@@ -8,24 +8,31 @@ import (
 )
 
 // Exec executes all processes for a document
-func Exec(job *Job, w io.Writer) {
-	fmt.Fprintf(w, "Starting job for: %s\n", job.document)
+func Exec(job *Job, writer io.Writer) {
+	fmt.Fprintf(writer, "Starting job for: %s\n", job.document)
+	var reader io.Reader
+	var err error
 	for i, process := range job.rule.Processes {
-		fmt.Fprintf(w, "executing step %d %s\n", i+1, process)
+		fmt.Fprintf(writer, "executing step %d %s\n", i+1, process)
 		switch process {
 		case "GET":
 			action := act.NewActionGet()
-			r, err := action.Get(job.document)
+			reader, err = action.Get(job.document)
 			if err != nil {
-				fmt.Fprintf(w, "error %s %s: %v\n", process, job.document, err)
-			} else {
-				_, err := io.Copy(w, r)
-				if err != nil {
-					fmt.Fprintf(w, "error copying %s: %v\n", job.document, err)
-				}
+				fmt.Fprintf(writer, "error %s %s: %v\n", process, job.document, err)
+			}
+		case "SAN":
+			action := act.NewActionSan()
+			reader, err = action.Sanitize(reader)
+			if err != nil {
+				fmt.Fprintf(writer, "error %s %s: %v\n", process, job.document, err)
 			}
 		default:
 		}
 	}
-	fmt.Fprintf(w, "Finished job\n")
+	_, err = io.Copy(writer, reader)
+	if err != nil {
+		fmt.Fprintf(writer, "error copying %s: %v\n", job.document, err)
+	}
+	fmt.Fprintf(writer, "\nFinished job\n")
 }

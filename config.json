@@ -5,8 +5,7 @@
             "regex": "/data/tns/docs/html/.*\\.html",
             "process": [
                 "GET",
-                "CLEAN",
-                "TAG"
+                "SAN"
             ]
         },
         {
