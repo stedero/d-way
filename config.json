@@ -1,6 +1,6 @@
 {
     "comment": "__CONMAN_HEADER__",
-    "publications_base_path": "/srv/www/publications",
+    "publications_base_path": "/Users/rooi/Desktop/d-way",
     "clean_url": "https://docsan.herokuapp.com/",
     "sdrm_url": "https://dev-online.ibfd.org/soda/",
     "rules": [

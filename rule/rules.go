@@ -17,6 +17,9 @@ type Rule struct {
 // Matcher defines the rules to match paths.
 type Matcher struct {
 	Comment string  `json:"comment"`
+	PublicationsBasePath string `json:"publications_base_path"`
+	CleanURL string `json:"clean_url"`
+	SdrmURL string `json:"sdrm_url"`
 	Rules   []*Rule `json:"rules"`
 }
 
