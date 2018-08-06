@@ -28,6 +28,7 @@ func main() {
 
 func docHandler(matcher *rule.Matcher) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		logRequest(r)
 		switch r.Method {
 		case "GET":
 			if !strings.HasPrefix(r.URL.Path, pathPrefix) {
@@ -87,8 +88,11 @@ func logMatcher(matcher *rule.Matcher) {
 	}
 }
 
-func logHeaders(r *http.Request) {
+func logRequest(r *http.Request) {
 	for k, v := range r.Header {
 		log.Printf("key[%s] = %v\n", k, v)
+	}
+	for i, cookie := range r.Cookies() {
+		log.Printf("cookie[%d] = %v\n", i, cookie)
 	}
 }
