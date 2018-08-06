@@ -9,9 +9,9 @@ import (
 
 // Rule defines a process rule.
 type Rule struct {
-	Regex     string `json:"regex"`
-	Regexc    *regexp.Regexp
-	Processes []string `json:"process"`
+	Regex  string `json:"regex"`
+	Regexc *regexp.Regexp
+	Steps  []string `json:"steps"`
 }
 
 // Matcher defines the rules to match paths.

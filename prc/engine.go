@@ -7,25 +7,25 @@ import (
 	"ibfd.org/d-way/act"
 )
 
-// Exec executes all processes for a document
+// Exec executes all processing steps for a document
 func Exec(job *Job, writer io.Writer) {
 	fmt.Fprintf(writer, "Starting job for: %s\n", job.document)
 	var reader io.ReadCloser
 	var err error
-	for i, process := range job.rule.Processes {
-		fmt.Fprintf(writer, "executing step %d %s\n", i+1, process)
-		switch process {
+	for i, step := range job.rule.Steps {
+		fmt.Fprintf(writer, "executing step %d %s\n", i+1, step)
+		switch step {
 		case "GET":
 			action := act.NewActionGet()
 			reader, err = action.Get(job.document)
 			if err != nil {
-				fmt.Fprintf(writer, "error %s %s: %v\n", process, job.document, err)
+				fmt.Fprintf(writer, "error %s %s: %v\n", step, job.document, err)
 			}
-		case "SAN":
+		case "CLEAN":
 			action := act.NewActionSan()
 			reader, err = action.Sanitize(reader)
 			if err != nil {
-				fmt.Fprintf(writer, "error %s %s: %v\n", process, job.document, err)
+				fmt.Fprintf(writer, "error %s %s: %v\n", step, job.document, err)
 			}
 		default:
 		}

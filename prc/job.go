@@ -5,7 +5,7 @@ import (
 	"ibfd.org/d-way/rule"
 )
 
-// Job describes the processes to be executed for a document
+// Job describes the steps to be executed for a document
 type Job struct {
 	document *doc.Document
 	rule     *rule.Rule
