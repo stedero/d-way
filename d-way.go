@@ -71,7 +71,7 @@ func logMatcher(matcher *rule.Matcher) {
 	for i, rule := range matcher.Rules {
 		log.Printf("\trule[%d]:", i)
 		log.Printf("\t\tregex: %s", rule.Regex)
-		log.Printf("\t\tprocesses: %s", strings.Join(rule.Processes, ", "))
+		log.Printf("\t\tsteps: %s", strings.Join(rule.Steps, ", "))
 	}
 }
 
