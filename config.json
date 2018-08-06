@@ -1,23 +1,26 @@
 {
     "comment": "__CONMAN_HEADER__",
+    "publications_base_path": "/srv/www/publications",
+    "clean_url": "https://docsan.herokuapp.com/",
+    "sdrm_url": "https://dev-online.ibfd.org/soda/",
     "rules": [
         {
             "regex": "/data/tns/docs/html/.*\\.html",
-            "process": [
+            "steps": [
                 "GET",
-                "SAN"
+                "CLEAN"
             ]
         },
         {
             "regex": "/data/tns/docs/pdf/.*\\.pdf*",
-            "process": [
+            "steps": [
                 "GET",
                 "SDRM"
             ]
         },
         {
             "regex": ".*",
-            "process": [
+            "steps": [
                 "GET"
             ]
         }
