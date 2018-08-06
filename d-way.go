@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"strings"
@@ -40,11 +41,22 @@ func docHandler(matcher *rule.Matcher) http.HandlerFunc {
 				fmt.Fprintf(w, "Got    : %s\n", document)
 				fmt.Fprintf(w, "Matched: %s\n", rule.Regex)
 				job := prc.NewJob(document, rule)
-				prc.Exec(job, w)
+				reader, err := prc.Exec(job)
+				if err != nil {
+					log.Printf("error %v", err)
+				} else {
+					err = output(w, reader)
+				}
 			}
 		default:
 		}
 	}
+}
+
+func output(dst io.Writer, src io.ReadCloser) error {
+	defer src.Close()
+	_, err := io.Copy(dst, src)
+	return err
 }
 
 func configHandler(configData []byte) func(http.ResponseWriter, *http.Request) {

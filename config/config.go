@@ -17,6 +17,7 @@ const defaultConfigFilePath = "config.json"
 var configFilePath string
 var matcher *rule.Matcher
 var configData []byte
+var version string
 
 func init() {
 	var err error

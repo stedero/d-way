@@ -3,26 +3,33 @@ package act
 import (
 	"io"
 	"net/http"
+	"ibfd.org/d-way/config"
 )
 
 // ActionSan defines the action that sanitizes a document.
 type ActionSan struct {
-	httpClient *http.Client
+	url string
+	client *http.Client
 }
 
-const docsanURL = "https://docsan.herokuapp.com"
+var actionSan *ActionSan
 
-// NewActionSan creates a document sanitizer.
-func NewActionSan() *ActionSan {
-	return &ActionSan{httpClient: NewHTTPClient()}
+func init() {
+	config := cfg.GetMatcher()
+	actionSan = &ActionSan{config.CleanURL, NewHTTPClient()}
+}
+
+// GetActionSan returns the document sanitizer.
+func GetActionSan() *ActionSan {
+	return actionSan;
 }
 
 // Sanitize calls the sanitizer service to clean a HTML document
 func (action *ActionSan) Sanitize(r io.ReadCloser) (io.ReadCloser, error) {
-	response, err := action.httpClient.Post(docsanURL, "Content-type: text/html", r)
+	defer r.Close()
+	response, err := action.client.Post(action.url, "Content-type: text/html", r)
 	if err != nil {
 		return nil, err
 	}
-	r.Close()
 	return response.Body, err
 }
