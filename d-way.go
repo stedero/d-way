@@ -41,7 +41,7 @@ func docHandler(matcher *rule.Matcher) http.HandlerFunc {
 				w.WriteHeader(200)
 				fmt.Fprintf(w, "Got    : %s\n", document)
 				fmt.Fprintf(w, "Matched: %s\n", rule.Regex)
-				job := prc.NewJob(document, rule)
+				job := prc.NewJob(document, rule, r.Cookies())
 				reader, err := prc.Exec(job)
 				if err != nil {
 					log.Printf("error %v", err)

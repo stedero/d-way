@@ -3,12 +3,13 @@ package act
 import (
 	"io"
 	"net/http"
+
 	"ibfd.org/d-way/config"
 )
 
 // ActionSan defines the action that sanitizes a document.
 type ActionSan struct {
-	url string
+	url    string
 	client *http.Client
 }
 
@@ -21,15 +22,20 @@ func init() {
 
 // GetActionSan returns the document sanitizer.
 func GetActionSan() *ActionSan {
-	return actionSan;
+	return actionSan
 }
 
 // Sanitize calls the sanitizer service to clean a HTML document
-func (action *ActionSan) Sanitize(r io.ReadCloser) (io.ReadCloser, error) {
+func (action *ActionSan) Sanitize(r io.ReadCloser, cookies []*http.Cookie) (*StepResult, error) {
 	defer r.Close()
-	response, err := action.client.Post(action.url, "Content-type: text/html", r)
+	req, err := http.NewRequest("POST", action.url, r)
+	req.Header.Set("Content-type", "text/html")
+	for _, cookie := range cookies {
+		req.AddCookie(cookie)
+	}
+	resp, err := action.client.Do(req)
 	if err != nil {
 		return nil, err
 	}
-	return response.Body, err
+	return &StepResult{"CLEAN", resp}, err
 }
