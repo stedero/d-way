@@ -28,6 +28,7 @@ func GetActionSan() *ActionSan {
 // Sanitize calls the sanitizer service to clean a HTML document
 func (action *ActionSan) Sanitize(r io.ReadCloser, cookies []*http.Cookie) (*StepResult, error) {
 	defer r.Close()
+	stepResult := NewStepResult("CLEAN").Start()
 	req, err := http.NewRequest("POST", action.url, r)
 	req.Header.Set("Content-type", "text/html")
 	for _, cookie := range cookies {
@@ -37,5 +38,5 @@ func (action *ActionSan) Sanitize(r io.ReadCloser, cookies []*http.Cookie) (*Ste
 	if err != nil {
 		return nil, err
 	}
-	return &StepResult{"CLEAN", resp}, err
+	return stepResult.SetResponse(resp).End(), err
 }

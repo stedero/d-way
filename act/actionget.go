@@ -1,9 +1,9 @@
 package act
 
 import (
-	"io"
 	"log"
 	"os"
+
 	"ibfd.org/d-way/config"
 	"ibfd.org/d-way/doc"
 )
@@ -27,10 +27,12 @@ func GetActionGet() *ActionGet {
 }
 
 // Get fetches a document.
-func (action *ActionGet) Get(document *doc.Document) (io.ReadCloser, error) {
+func (action *ActionGet) Get(document *doc.Document) (*StepResult, error) {
+	stepResult := NewStepResult("GET").Start()
 	target := action.target(document.Path)
 	log.Printf("Fetching: %s", target)
-	return os.Open(target)
+	reader, err := os.Open(target)
+	return stepResult.SetReader(reader).End(), err
 }
 
 func (action *ActionGet) target(path string) string {

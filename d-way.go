@@ -42,11 +42,14 @@ func docHandler(matcher *rule.Matcher) http.HandlerFunc {
 				fmt.Fprintf(w, "Got    : %s\n", document)
 				fmt.Fprintf(w, "Matched: %s\n", rule.Regex)
 				job := prc.NewJob(document, rule, r.Cookies())
-				reader, err := prc.Exec(job)
+				jobResult, err := prc.Exec(job)
 				if err != nil {
 					log.Printf("error %v", err)
 				} else {
-					err = output(w, reader)
+					err = output(w, jobResult.Reader)
+					for _, result := range jobResult.Steps {
+						log.Printf("Step %s took %s\n", result.Step, result.Duration)
+					}
 				}
 			}
 		default:
