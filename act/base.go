@@ -31,7 +31,7 @@ func (stepResult *StepResult) Reader() io.ReadCloser {
 	return stepResult.response.Body
 }
 
-// NewstepResult creates a step result.
+// NewStepResult creates a step result.
 func NewStepResult(step string) *StepResult {
 	return &StepResult{Step: step}
 }
