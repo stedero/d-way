@@ -1,0 +1,24 @@
+version: '2'
+services:
+  d-way:
+    container_name: d-way
+    hostname: d-way
+    image: ${REGISTRY}/ibfd/d-way:${VERSION}
+    restart: always
+    networks:
+     - exposed
+    ports:
+     - 9997:8080
+    volumes:
+     - ${PWD}/d-way.json:/etc/d-way.json:ro
+    cpu_quota: 50000
+    mem_limit: '512m'
+    dns:
+     - ${DNS1_IP}
+     - ${DNS2_IP}
+    dns_search: ${DNS_SEARCH}
+networks:
+  exposed:
+    external:
+      name: ibfd_exposed
+
