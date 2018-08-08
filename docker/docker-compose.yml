@@ -8,7 +8,7 @@ services:
     networks:
      - exposed
     ports:
-     - 9997:8080
+     - 9996:8080
     volumes:
      - ${PWD}/d-way.json:/etc/d-way.json:ro
     cpu_quota: 50000
