@@ -37,7 +37,7 @@ func NewMatcher(data []byte) (*Matcher, error) {
 // Match finds the first rule that matches a document path.
 func (matcher *Matcher) Match(d *doc.Document) *Rule {
 	for _, rule := range matcher.Rules {
-		if rule.Regexc.Match([]byte(d.Path)) {
+		if rule.Regexc.Match([]byte(d.Path())) {
 			return rule
 		}
 	}

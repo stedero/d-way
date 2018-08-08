@@ -20,15 +20,14 @@ func init() {
 	actionSan = &ActionSan{config.CleanURL, NewHTTPClient()}
 }
 
-// GetActionSan returns the document sanitizer.
-func GetActionSan() *ActionSan {
-	return actionSan
+// Clean calls the docsan service to clean a HTML document
+func Clean(r io.ReadCloser, cookies []*http.Cookie) (*StepResult, error) {
+	return actionSan.clean(r, cookies)
 }
 
-// Sanitize calls the sanitizer service to clean a HTML document
-func (action *ActionSan) Sanitize(r io.ReadCloser, cookies []*http.Cookie) (*StepResult, error) {
+// Sanitize calls the docsan service to clean a HTML document
+func (action *ActionSan) clean(r io.ReadCloser, cookies []*http.Cookie) (*StepResult, error) {
 	defer r.Close()
-	stepResult := NewStepResult("CLEAN").Start()
 	req, err := http.NewRequest("POST", action.url, r)
 	req.Header.Set("Content-type", "text/html")
 	for _, cookie := range cookies {
@@ -38,5 +37,5 @@ func (action *ActionSan) Sanitize(r io.ReadCloser, cookies []*http.Cookie) (*Ste
 	if err != nil {
 		return nil, err
 	}
-	return stepResult.SetResponse(resp).End(), err
+	return NewStepResult().SetResponse(resp), err
 }

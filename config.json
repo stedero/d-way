@@ -1,8 +1,8 @@
 {
     "comment": "__CONMAN_HEADER__",
     "publications_base_path": "/Users/rooi/Desktop/d-way",
-    "clean_url": "https://docsan.herokuapp.com/",
-    "sdrm_url": "https://dev-online.ibfd.org/soda/",
+    "clean_url": "http://development6.ibfd.org:9997/",
+    "sdrm_url": "https://dev-online.ibfd.org/soda",
     "rules": [
         {
             "regex": "/data/tns/docs/html/.*\\.html",
@@ -14,7 +14,12 @@
         {
             "regex": "/data/tns/docs/pdf/.*\\.pdf*",
             "steps": [
-                "GET",
+                "SDRM"
+            ]
+        },
+        {
+            "regex": "/bort/printversion/pdf/.*\\.pdf*",
+            "steps": [
                 "SDRM"
             ]
         },

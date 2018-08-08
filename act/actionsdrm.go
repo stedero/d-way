@@ -1,0 +1,49 @@
+package act
+
+import (
+	"log"
+	"net/http"
+
+	"ibfd.org/d-way/doc"
+
+	"ibfd.org/d-way/config"
+)
+
+// ActionSDRM defines the action that adds Social DRM statement to a document
+type ActionSDRM struct {
+	url    string
+	client *http.Client
+}
+
+var actionSDRM *ActionSDRM
+
+func init() {
+	config := cfg.GetMatcher()
+	actionSDRM = &ActionSDRM{config.SdrmURL, NewHTTPClient()}
+}
+
+// SDRM calls the Soda service to add Social DRM to a document.
+func SDRM(document *doc.Document, cookies []*http.Cookie) (*StepResult, error) {
+	return actionSDRM.sdrm(document, cookies)
+}
+
+// sdrm calls the Soda service to a Social DRM to a document
+func (action *ActionSDRM) sdrm(document *doc.Document, cookies []*http.Cookie) (*StepResult, error) {
+	target := action.target(document.Path())
+	log.Printf("Soda: %s\n", target)
+	req, err := http.NewRequest("GET", target, nil)
+	req.Header.Set("Accept", "application/pdf")
+	for _, cookie := range cookies {
+		req.AddCookie(cookie)
+	}
+	resp, err := action.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	log.Printf("Soda result status: %d\n", resp.StatusCode)
+	return NewStepResult().SetResponse(resp), err
+}
+
+func (action *ActionSDRM) target(path string) string {
+	return action.url + path
+}

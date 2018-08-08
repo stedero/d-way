@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -31,27 +30,25 @@ func docHandler(matcher *rule.Matcher) http.HandlerFunc {
 		logRequest(r)
 		switch r.Method {
 		case "GET":
-			if !strings.HasPrefix(r.URL.Path, pathPrefix) {
-				notFound(w, r.URL.Path)
-			} else {
-				path := strings.TrimPrefix(r.URL.Path, pathPrefix)
+				path := cleanPath(r.URL.Path)
 				document := doc.NewDocument(path)
 				rule := matcher.Match(document)
-				w.Header().Set("Content-Type", "text/plain")
-				w.WriteHeader(200)
-				fmt.Fprintf(w, "Got    : %s\n", document)
-				fmt.Fprintf(w, "Matched: %s\n", rule.Regex)
 				job := prc.NewJob(document, rule, r.Cookies())
 				jobResult, err := prc.Exec(job)
 				if err != nil {
 					log.Printf("error %v", err)
 				} else {
-					err = output(w, jobResult.Reader)
-					for _, result := range jobResult.Steps {
+					w.WriteHeader(200)
+					w.Header().Set("Content-Type", jobResult.ContentType())
+					err = output(w, jobResult.Reader())
+					if err != nil {
+						log.Printf("error %v", err)
+					}
+					for _, result := range jobResult.Steps() {
 						log.Printf("Step %s took %s\n", result.Step, result.Duration)
 					}
+					logResponse(jobResult.Response())
 				}
-			}
 		default:
 		}
 	}
@@ -73,6 +70,14 @@ func configHandler(configData []byte) func(http.ResponseWriter, *http.Request) {
 		default:
 		}
 	}
+}
+
+func cleanPath(path string) string {
+	return strings.TrimPrefix(path, pathPrefix)
+}
+
+func isValidURL(url string) bool {
+	return strings.HasPrefix(url, pathPrefix)
 }
 
 func notFound(w http.ResponseWriter, url string) {
@@ -97,5 +102,16 @@ func logRequest(r *http.Request) {
 	}
 	for i, cookie := range r.Cookies() {
 		log.Printf("cookie[%d] = %v\n", i, cookie)
+	}
+}
+
+func logResponse(r *http.Response) {
+	if r != nil {
+		for k, v := range r.Header {
+			log.Printf("key[%s] = %v\n", k, v)
+		}
+		for i, cookie := range r.Cookies() {
+			log.Printf("cookie[%d] = %v\n", i, cookie)
+		}
 	}
 }

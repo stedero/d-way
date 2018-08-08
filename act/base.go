@@ -10,12 +10,18 @@ const defaultTimeoutSeconds = 10
 
 // StepResult the results of executing one step.
 type StepResult struct {
-	Step     string
 	response *http.Response
 	reader   io.ReadCloser
+	mimeType string
+}
+
+// TimedResult the result of executing one step with timing
+type TimedResult struct {
+	Step     string
 	start    time.Time
 	end      time.Time
 	Duration time.Duration
+	StepResult
 }
 
 // NewHTTPClient creates a HTPP client with a default timeout.
@@ -31,9 +37,24 @@ func (stepResult *StepResult) Reader() io.ReadCloser {
 	return stepResult.response.Body
 }
 
+// Response gets the HTTP response.
+func (stepResult *StepResult) Response() *http.Response {
+	return stepResult.response
+}
+
+// MimeType returns the mime type of this result.
+func (stepResult *StepResult) MimeType() string {
+	return stepResult.mimeType
+}
+
 // NewStepResult creates a step result.
-func NewStepResult(step string) *StepResult {
-	return &StepResult{Step: step}
+func NewStepResult() *StepResult {
+	return &StepResult{}
+}
+
+// NewTimedResult creates a timed result.
+func NewTimedResult(step string) *TimedResult {
+	return &TimedResult{Step: step}
 }
 
 // SetReader sets the reader.
@@ -45,18 +66,32 @@ func (stepResult *StepResult) SetReader(reader io.ReadCloser) *StepResult {
 // SetResponse sets the HTTP response.
 func (stepResult *StepResult) SetResponse(response *http.Response) *StepResult {
 	stepResult.response = response
+	stepResult.mimeType = response.Header["Content-Type"][0]
+	return stepResult
+}
+
+// SetMimeType sets the mime type.
+func (stepResult *StepResult) SetMimeType(mimeType string) *StepResult {
+	stepResult.mimeType = mimeType
 	return stepResult
 }
 
 // Start signals the start of the process step.
-func (stepResult *StepResult) Start() *StepResult {
-	stepResult.start = time.Now()
-	return stepResult
+func (timedResult *TimedResult) Start() *TimedResult {
+	timedResult.start = time.Now()
+	return timedResult
 }
 
 // End signals the end of the process step.
-func (stepResult *StepResult) End() *StepResult {
-	stepResult.end = time.Now()
-	stepResult.Duration = stepResult.end.Sub(stepResult.start)
-	return stepResult
+func (timedResult *TimedResult) End() *TimedResult {
+	timedResult.end = time.Now()
+	timedResult.Duration = timedResult.end.Sub(timedResult.start)
+	return timedResult
+}
+
+// SetStepResult added the step result.
+func (timedResult *TimedResult) SetStepResult(stepResult *StepResult) *TimedResult {
+	timedResult.response = stepResult.response
+	timedResult.reader = stepResult.reader
+	return timedResult
 }
