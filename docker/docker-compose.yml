@@ -8,9 +8,10 @@ services:
     networks:
      - exposed
     ports:
-     - 9996:8080
+     - {DWAY_PORT}:8080
     volumes:
      - ${PWD}/d-way.json:/etc/d-way.json:ro
+     - /srv/www/publications:/data:ro
     cpu_quota: 50000
     mem_limit: '512m'
     dns:
