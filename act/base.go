@@ -95,3 +95,9 @@ func (timedResult *TimedResult) SetStepResult(stepResult *StepResult) *TimedResu
 	timedResult.reader = stepResult.reader
 	return timedResult
 }
+
+func copyCookies(request *http.Request, cookies []*http.Cookie) {
+	for _, cookie := range cookies {
+		request.AddCookie(cookie)
+	}
+}

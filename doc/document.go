@@ -1,13 +1,13 @@
 package doc
 
 import (
-	"strings"
 	"mime"
+	"strings"
 )
 
 // Document describes a document
 type Document struct {
-	path string
+	path     string
 	mimeType string
 }
 
@@ -32,8 +32,8 @@ func (document *Document) MimeType() string {
 
 func extension(path string) string {
 	dotpos := strings.LastIndex(path, ".")
-	if (dotpos < 0) {
-		return ".html"
+	if dotpos < 0 {
+		return ""
 	}
 	return path[dotpos:]
 }

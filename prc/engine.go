@@ -2,10 +2,8 @@ package prc
 
 import (
 	"io"
-	"net/http"
 
 	"ibfd.org/d-way/act"
-	"ibfd.org/d-way/doc"
 )
 
 type actFunc func() (*act.StepResult, error)
@@ -19,9 +17,9 @@ func Exec(job *Job) (*JobResult, error) {
 	for _, step := range job.rule.Steps {
 		switch step {
 		case "GET":
-			result, err = exec(step, getter(job.document))
+			result, err = exec(step, getter(job))
 		case "CLEAN":
-			result, err = exec(step, cleaner(reader, job.cookies))
+			result, err = exec(step, cleaner(job, reader))
 		case "SDRM":
 			result, err = exec(step, soda(job))
 		default:
@@ -38,24 +36,6 @@ func Exec(job *Job) (*JobResult, error) {
 	return jobResult, err
 }
 
-func getter(doc *doc.Document) actFunc {
-	return func() (*act.StepResult, error) {
-		return act.Get(doc)
-	}
-}
-
-func cleaner(r io.ReadCloser, cookies []*http.Cookie) actFunc {
-	return func() (*act.StepResult, error) {
-		return act.Clean(r, cookies)
-	}
-}
-
-func soda(job *Job) actFunc {
-	return func() (*act.StepResult, error) {
-		return act.SDRM(job.document, job.cookies)
-	}
-}
-
 func exec(step string, action actFunc) (*act.TimedResult, error) {
 	timedResult := act.NewTimedResult(step).Start()
 	stepResult, err := action()
@@ -65,4 +45,22 @@ func exec(step string, action actFunc) (*act.TimedResult, error) {
 	timedResult.End()
 	timedResult.SetStepResult(stepResult)
 	return timedResult, err
+}
+
+func getter(job *Job) actFunc {
+	return func() (*act.StepResult, error) {
+		return act.Get(job.document)
+	}
+}
+
+func cleaner(job *Job, r io.ReadCloser) actFunc {
+	return func() (*act.StepResult, error) {
+		return act.Clean(r, job.cookies)
+	}
+}
+
+func soda(job *Job) actFunc {
+	return func() (*act.StepResult, error) {
+		return act.SDRM(job.document, job.cookies)
+	}
 }

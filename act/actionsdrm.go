@@ -33,9 +33,7 @@ func (action *ActionSDRM) sdrm(document *doc.Document, cookies []*http.Cookie) (
 	log.Printf("Soda: %s\n", target)
 	req, err := http.NewRequest("GET", target, nil)
 	req.Header.Set("Accept", "application/pdf")
-	for _, cookie := range cookies {
-		req.AddCookie(cookie)
-	}
+	copyCookies(req, cookies)
 	resp, err := action.client.Do(req)
 	if err != nil {
 		return nil, err

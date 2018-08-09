@@ -30,9 +30,7 @@ func (action *ActionSan) clean(r io.ReadCloser, cookies []*http.Cookie) (*StepRe
 	defer r.Close()
 	req, err := http.NewRequest("POST", action.url, r)
 	req.Header.Set("Content-type", "text/html")
-	for _, cookie := range cookies {
-		req.AddCookie(cookie)
-	}
+	copyCookies(req, cookies)
 	resp, err := action.client.Do(req)
 	if err != nil {
 		return nil, err

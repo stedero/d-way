@@ -12,7 +12,7 @@
             ]
         },
         {
-            "regex": "/data/tns/docs/pdf/.*\\.pdf*",
+            "regex": "/data/tns/docs/printversion/pdf/.*\\.pdf*",
             "steps": [
                 "SDRM"
             ]

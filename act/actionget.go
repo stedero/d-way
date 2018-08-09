@@ -26,7 +26,7 @@ func Get(document *doc.Document) (*StepResult, error) {
 	return actionGet.get(document)
 }
 
-// Get fetches a document.
+// get fetches a document.
 func (action *ActionGet) get(document *doc.Document) (*StepResult, error) {
 	target := action.target(document.Path())
 	log.Printf("Fetching: %s", target)
