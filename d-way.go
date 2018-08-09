@@ -28,10 +28,13 @@ func main() {
 
 func docHandler(matcher *rule.Matcher) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
-		logRequest(request)
 		switch request.Method {
 		case "GET":
 			path := cleanPath(request.URL.Path)
+			if path == "/favicon.ico" {
+				return
+			}
+			logRequest(request)
 			document := doc.NewDocument(path)
 			rule := matcher.Match(document)
 			job := prc.NewJob(document, rule, request.Cookies())
