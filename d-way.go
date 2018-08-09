@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -26,29 +27,32 @@ func main() {
 }
 
 func docHandler(matcher *rule.Matcher) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		logRequest(r)
-		switch r.Method {
+	return func(writer http.ResponseWriter, request *http.Request) {
+		logRequest(request)
+		switch request.Method {
 		case "GET":
-				path := cleanPath(r.URL.Path)
-				document := doc.NewDocument(path)
-				rule := matcher.Match(document)
-				job := prc.NewJob(document, rule, r.Cookies())
-				jobResult, err := prc.Exec(job)
+			path := cleanPath(request.URL.Path)
+			document := doc.NewDocument(path)
+			rule := matcher.Match(document)
+			job := prc.NewJob(document, rule, request.Cookies())
+			jobResult, err := prc.Exec(job)
+			if err != nil {
+				writer.Header().Set("Content-Type", "text/plain")
+				writer.WriteHeader(500)
+				fmt.Fprintf(writer, "Bad request: %v\n", err)
+				log.Printf("error %v", err)
+			} else {
+				writer.Header().Set("Content-Type", jobResult.ContentType())
+				writer.WriteHeader(200)
+				err = output(writer, jobResult.Reader())
 				if err != nil {
 					log.Printf("error %v", err)
-				} else {
-					w.WriteHeader(200)
-					w.Header().Set("Content-Type", jobResult.ContentType())
-					err = output(w, jobResult.Reader())
-					if err != nil {
-						log.Printf("error %v", err)
-					}
-					for _, result := range jobResult.Steps() {
-						log.Printf("Step %s took %s\n", result.Step, result.Duration)
-					}
-					logResponse(jobResult.Response())
 				}
+				for _, result := range jobResult.Steps() {
+					log.Printf("Step %s took %s\n", result.Step, result.Duration)
+				}
+				logResponse(jobResult.Response())
+			}
 		default:
 		}
 	}
@@ -97,6 +101,7 @@ func logMatcher(matcher *rule.Matcher) {
 }
 
 func logRequest(r *http.Request) {
+	log.Printf("===========================================================")
 	for k, v := range r.Header {
 		log.Printf("key[%s] = %v\n", k, v)
 	}
