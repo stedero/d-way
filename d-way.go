@@ -32,6 +32,7 @@ func docHandler(matcher *rule.Matcher) http.HandlerFunc {
 		case "GET":
 			path := cleanPath(request.URL.Path)
 			if path == "/favicon.ico" {
+				writer.WriteHeader(404)
 				return
 			}
 			logRequest(request)
