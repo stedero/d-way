@@ -18,11 +18,11 @@
 package log
 
 import (
-	"strings"
 	"fmt"
 	"io"
 	"os"
 	"runtime"
+	"strings"
 	"sync"
 	"time"
 )
@@ -373,7 +373,7 @@ func (l *Logger) Panicln(v ...interface{}) {
 }
 
 func (l *Logger) mustLog(level LogLevel) bool {
-	return level >= l.Level()
+	return level >= l.getLevel()
 }
 
 // Flags returns the output flags for the logger.
@@ -405,14 +405,29 @@ func (l *Logger) SetPrefix(prefix string) {
 }
 
 // Level return the current logging level
-func (l *Logger) Level() LogLevel {
+func (l *Logger) Level() string {
+	return levelTags[l.getLevel()]
+}
+
+// level return the current logging level
+func (l *Logger) getLevel() LogLevel {
 	l.mu.Lock()
 	defer l.mu.Unlock()
 	return l.level
 }
 
+// SetLevel sets the logging level.
+func (l *Logger) SetLevel(level string) {
+	for i, tag := range levelTags {
+		if strings.EqualFold(tag, level) {
+			l.setLevel(LogLevel(i))
+			return
+		}
+	}
+}
+
 // SetLevel sets the logging level
-func (l *Logger) SetLevel(level LogLevel) {
+func (l *Logger) setLevel(level LogLevel) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
 	l.level = level
@@ -435,19 +450,14 @@ func SetFlags(flag int) {
 	std.SetFlags(flag)
 }
 
-// Level returns the current logging level.
-func Level() LogLevel {
+// Level returns the current logging level for the standard logger.
+func Level() string {
 	return std.Level()
 }
 
-// SetLevel sets the logging level.
+// SetLevel sets the logging level for the standard logger.
 func SetLevel(level string) {
-	for i, tag := range levelTags {
-		if strings.EqualFold(tag, level) {
-			std.SetLevel(LogLevel(i))
-			return
-		}
-	}
+	std.SetLevel(level)
 }
 
 // Prefix returns the output prefix for the standard logger.
@@ -475,21 +485,27 @@ func Debug(v ...interface{}) {
 // if the current logging level allows that.
 // Arguments are handled in the manner of fmt.Print.
 func Info(v ...interface{}) {
-	std.Info(v)
+	if std.mustLog(Linfo) {
+		std.Output(2, Linfo, fmt.Sprint(v...))
+	}
 }
 
 // Warn calls Output to print to the standard logger
 // if the current logging level allows that.
 // Arguments are handled in the manner of fmt.Print.
 func Warn(v ...interface{}) {
-	std.Warn(v)
+	if std.mustLog(Lwarn) {
+		std.Output(2, Lwarn, fmt.Sprint(v...))
+	}
 }
 
 // Error calls Output to print to the standard logger
 // if the current logging level allows that.
 // Arguments are handled in the manner of fmt.Print.
 func Error(v ...interface{}) {
-	std.Error(v)
+	if std.mustLog(Lerror) {
+		std.Output(2, Lerror, fmt.Sprint(v...))
+	}
 }
 
 // Debugf calls Output to print to the standard logger.
