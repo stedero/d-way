@@ -25,8 +25,9 @@ func main() {
 		if err != nil {
 			log.Fatalf("fail to create file %s: %v", logConfig.Filename, err)
 		}
+		logger := io.MultiWriter(os.Stderr, logFile)
 		log.SetLevel(logConfig.Level)
-		log.SetOutput(logFile)
+		log.SetOutput(logger)
 		defer logFile.Close()
 	}
 	server := http.Server{Addr: ":" + cfg.GetPort()}
