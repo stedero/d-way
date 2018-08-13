@@ -30,6 +30,7 @@ func main() {
 		log.SetOutput(logger)
 		defer logFile.Close()
 	}
+	log.Info("Starting d-way on port %s", cfg.GetPort())
 	server := http.Server{Addr: ":" + cfg.GetPort()}
 	matcher := cfg.GetMatcher()
 	logMatcher(matcher)
