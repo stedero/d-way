@@ -3,6 +3,10 @@
     "publications_base_path": "/Users/rooi/Desktop/d-way",
     "clean_url": "http://development6.ibfd.org:9997/",
     "sdrm_url": "https://dev-online.ibfd.org/soda",
+    "logging": {
+        "filename": "./d-way.log",
+        "level": "DEBUG"
+    },
     "rules": [
         {
             "regex": "/data/tns/docs/html/.*\\.html",

@@ -14,13 +14,20 @@ type Rule struct {
 	Steps  []string `json:"steps"`
 }
 
+// LogConfig defines the logging configuration.
+type LogConfig struct {
+	Filename string `json:"filename"`
+	Level    string `json:"level"`
+}
+
 // Matcher defines the rules to match paths.
 type Matcher struct {
-	Comment string  `json:"comment"`
-	PublicationsBasePath string `json:"publications_base_path"`
-	CleanURL string `json:"clean_url"`
-	SdrmURL string `json:"sdrm_url"`
-	Rules   []*Rule `json:"rules"`
+	Comment              string    `json:"comment"`
+	PublicationsBasePath string    `json:"publications_base_path"`
+	CleanURL             string    `json:"clean_url"`
+	SdrmURL              string    `json:"sdrm_url"`
+	Logging              *LogConfig `json:"logging"`
+	Rules                []*Rule   `json:"rules"`
 }
 
 // NewMatcher creates a Matcher.

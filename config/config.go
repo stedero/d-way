@@ -3,9 +3,9 @@ package cfg
 import (
 	"flag"
 	"io/ioutil"
-	"log"
 	"os"
 
+	"ibfd.org/d-way/log"
 	"ibfd.org/d-way/rule"
 )
 
@@ -15,6 +15,7 @@ const defaultPort = "8080"
 const defaultConfigFilePath = "config.json"
 
 var configFilePath string
+var logFilePath string
 var matcher *rule.Matcher
 var configData []byte
 var version string
@@ -34,7 +35,6 @@ func init() {
 	if err != nil {
 		log.Fatalf("fail to unmarshal from file %s: %v", configFilePath, err)
 	}
-	log.Printf("loaded configuration from %s", configFilePath)
 }
 
 // GetMatcher returns the rule matcher.
@@ -58,4 +58,12 @@ func GetPort() string {
 // GetConfigData provides the content of the config file.
 func GetConfigData() []byte {
 	return configData
+}
+
+// GetLogConfig returns the logging configuration.
+func GetLogConfig() *rule.LogConfig {
+	if matcher.Logging != nil {
+		return matcher.Logging
+	}
+	return &rule.LogConfig{}
 }

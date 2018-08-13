@@ -3,22 +3,33 @@ package main
 import (
 	"fmt"
 	"io"
-	"log"
 	"net/http"
+	"os"
 	"strings"
 
+	"ibfd.org/d-way/config"
 	"ibfd.org/d-way/doc"
+	"ibfd.org/d-way/log"
 	"ibfd.org/d-way/prc"
 	"ibfd.org/d-way/rule"
-
-	"ibfd.org/d-way/config"
 )
 
 const pathPrefix = "/d-way"
 
 func main() {
+	logConfig := cfg.GetLogConfig()
+	if logConfig.Filename == "" {
+		log.SetLevel("DEBUG")
+	} else {
+		logFile, err := os.Create(logConfig.Filename)
+		if err != nil {
+			log.Fatalf("fail to create file %s: %v", logConfig.Filename, err)
+		}
+		log.SetLevel(logConfig.Level)
+		log.SetOutput(logFile)
+		defer logFile.Close()
+	}
 	server := http.Server{Addr: ":" + cfg.GetPort()}
-	log.Printf("d-way %s started on %s", version, server.Addr)
 	matcher := cfg.GetMatcher()
 	logMatcher(matcher)
 	http.HandleFunc("/", docHandler(matcher))
@@ -44,16 +55,16 @@ func docHandler(matcher *rule.Matcher) http.HandlerFunc {
 				writer.Header().Set("Content-Type", "text/plain")
 				writer.WriteHeader(500)
 				fmt.Fprintf(writer, "Bad request: %v\n", err)
-				log.Printf("error %v", err)
+				log.Errorf("error %v", err)
 			} else {
 				writer.Header().Set("Content-Type", jobResult.ContentType())
 				writer.WriteHeader(200)
 				err = output(writer, jobResult.Reader())
 				if err != nil {
-					log.Printf("error %v", err)
+					log.Errorf("error %v", err)
 				}
 				for _, result := range jobResult.Steps() {
-					log.Printf("Step %s took %s\n", result.Step, result.Duration)
+					log.Debugf("Step %s took %s\n", result.Step, result.Duration)
 				}
 				logResponse(jobResult.Response())
 			}
@@ -91,32 +102,32 @@ func notFound(w http.ResponseWriter, url string) {
 }
 
 func logMatcher(matcher *rule.Matcher) {
-	log.Printf("%s", matcher.Comment)
-	log.Printf("rules: ")
+	log.Debugf("%s", matcher.Comment)
+	log.Debug("rules:")
 	for i, rule := range matcher.Rules {
-		log.Printf("\trule[%d]:", i)
-		log.Printf("\t\tregex: %s", rule.Regex)
-		log.Printf("\t\tsteps: %s", strings.Join(rule.Steps, ", "))
+		log.Debugf("\trule[%d]:", i)
+		log.Debugf("\t\tregex: %s", rule.Regex)
+		log.Debugf("\t\tsteps: %s", strings.Join(rule.Steps, ", "))
 	}
 }
 
 func logRequest(r *http.Request) {
-	log.Printf("===========================================================")
+	log.Debug("===========================================================")
 	for k, v := range r.Header {
-		log.Printf("key[%s] = %v\n", k, v)
+		log.Debugf("key[%s] = %v\n", k, v)
 	}
 	for i, cookie := range r.Cookies() {
-		log.Printf("cookie[%d] = %v\n", i, cookie)
+		log.Debugf("cookie[%d] = %v\n", i, cookie)
 	}
 }
 
 func logResponse(r *http.Response) {
 	if r != nil {
 		for k, v := range r.Header {
-			log.Printf("key[%s] = %v\n", k, v)
+			log.Debugf("key[%s] = %v\n", k, v)
 		}
 		for i, cookie := range r.Cookies() {
-			log.Printf("cookie[%d] = %v\n", i, cookie)
+			log.Debugf("cookie[%d] = %v\n", i, cookie)
 		}
 	}
 }
