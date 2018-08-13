@@ -22,16 +22,11 @@ func init() {
 
 // Clean calls the docsan service to clean a HTML document
 func Clean(r io.ReadCloser, cookies []*http.Cookie) (*StepResult, error) {
-	return actionSan.clean(r, cookies)
-}
-
-// Sanitize calls the docsan service to clean a HTML document
-func (action *ActionSan) clean(r io.ReadCloser, cookies []*http.Cookie) (*StepResult, error) {
 	defer r.Close()
-	req, err := http.NewRequest("POST", action.url, r)
+	req, err := http.NewRequest("POST", actionSan.url, r)
 	req.Header.Set("Content-type", "text/html")
 	copyCookies(req, cookies)
-	resp, err := action.client.Do(req)
+	resp, err := actionSan.client.Do(req)
 	if err != nil {
 		return nil, err
 	}
