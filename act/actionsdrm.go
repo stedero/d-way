@@ -1,8 +1,9 @@
 package act
 
 import (
-	"ibfd.org/d-way/log"
 	"net/http"
+
+	"ibfd.org/d-way/log"
 
 	"ibfd.org/d-way/doc"
 
@@ -24,21 +25,16 @@ func init() {
 
 // SDRM calls the Soda service to add Social DRM to a document.
 func SDRM(document *doc.Document, cookies []*http.Cookie) (*StepResult, error) {
-	return actionSDRM.sdrm(document, cookies)
-}
-
-// sdrm calls the Soda service to a Social DRM to a document
-func (action *ActionSDRM) sdrm(document *doc.Document, cookies []*http.Cookie) (*StepResult, error) {
-	target := action.target(document.Path())
+	target := actionSDRM.target(document.Path())
 	log.Debugf("Soda: %s\n", target)
 	req, err := http.NewRequest("GET", target, nil)
 	req.Header.Set("Accept", "application/pdf")
 	copyCookies(req, cookies)
-	resp, err := action.client.Do(req)
+	resp, err := actionSDRM.client.Do(req)
 	if err != nil {
 		return nil, err
 	}
-	log.Debugf("Soda result status: %d\n", resp.StatusCode)
+	log.Debugf("Soda result status: %d", resp.StatusCode)
 	return NewStepResult().SetResponse(resp), err
 }
 

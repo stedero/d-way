@@ -25,10 +25,12 @@ func main() {
 		if err != nil {
 			log.Fatalf("fail to create file %s: %v", logConfig.Filename, err)
 		}
+		logger := io.MultiWriter(os.Stderr, logFile)
 		log.SetLevel(logConfig.Level)
-		log.SetOutput(logFile)
+		log.SetOutput(logger)
 		defer logFile.Close()
 	}
+	log.Info("Starting d-way on port %s", cfg.GetPort())
 	server := http.Server{Addr: ":" + cfg.GetPort()}
 	matcher := cfg.GetMatcher()
 	logMatcher(matcher)

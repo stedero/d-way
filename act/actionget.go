@@ -1,19 +1,19 @@
 package act
 
 import (
-	"ibfd.org/d-way/log"
 	"os"
+
+	"ibfd.org/d-way/log"
 
 	"ibfd.org/d-way/config"
 	"ibfd.org/d-way/doc"
 )
 
-// ActionGet defines the action that fetches document.
+// ActionGet defines the action that fetches a document.
 type ActionGet struct {
 	basePath string
 }
 
-var publicationsBasePath string
 var actionGet *ActionGet
 
 func init() {
@@ -23,12 +23,7 @@ func init() {
 
 // Get fetches a document.
 func Get(document *doc.Document) (*StepResult, error) {
-	return actionGet.get(document)
-}
-
-// get fetches a document.
-func (action *ActionGet) get(document *doc.Document) (*StepResult, error) {
-	target := action.target(document.Path())
+	target := actionGet.target(document.Path())
 	log.Debugf("Fetching: %s", target)
 	reader, err := os.Open(target)
 	return NewStepResult().SetReader(reader).SetMimeType(document.MimeType()), err
