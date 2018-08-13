@@ -84,10 +84,6 @@ func cleanPath(path string) string {
 	return strings.TrimPrefix(path, pathPrefix)
 }
 
-func isValidURL(url string) bool {
-	return strings.HasPrefix(url, pathPrefix)
-}
-
 func notFound(w http.ResponseWriter, url string) {
 	w.Header().Set("Content-Type", "text/plain")
 	w.WriteHeader(404)
