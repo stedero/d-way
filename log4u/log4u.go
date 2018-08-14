@@ -36,8 +36,8 @@ const (
 	// is specified.
 	// For example, flags Ldate | Ltime (or LstdFlags) produce,
 	//	2009/01/23 01:23:23 message
-	// while flags Ldate | Ltime | Lmicroseconds | Llongfile produce,
-	//	2009/01/23 01:23:23.123123 /a/b/c/d.go:23: message
+	// while flags Ldate | Ltime | Lmilliseconds | Llongfile produce,
+	//	2009/01/23 01:23:23.123 /a/b/c/d.go:23: message
 	Ldate         = 1 << iota                                  // the date in the local time zone: 2009/01/23
 	Ltime                                                      // the time in the local time zone: 01:23:23
 	Lmilliseconds                                              // millisecond resolution: 01:23:23,123.  assumes Ltime.
