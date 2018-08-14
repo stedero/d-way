@@ -12,6 +12,7 @@ services:
     volumes:
      - ${PWD}/d-way.json:/etc/d-way.json:ro
      - /srv/www/publications:/data:ro
+     - /opt/d-way/log:/log
     cpu_quota: 50000
     mem_limit: '512m'
     dns:
