@@ -13,7 +13,11 @@
 // The Fatal functions call os.Exit(1) after writing the log message.
 // The Panic functions call panic after writing the log message.
 
-// TODO: Check license and update comment to reflect the added functionality.
+// 2018-08-14 Steef
+// Copied from the original Go log package and added log level functionality
+// much like log4j has. This to allow integration with the Kibana log tool.
+//
+// TODO: Check license and update comment to describe the added functionality.
 
 package log4u
 
