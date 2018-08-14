@@ -4,7 +4,7 @@ import (
 	"io"
 	"net/http"
 
-	"ibfd.org/d-way/config"
+	"ibfd.org/d-way/cfg"
 )
 
 // ActionSan defines the action that sanitizes a document.

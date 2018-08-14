@@ -3,9 +3,9 @@ package act
 import (
 	"os"
 
-	"ibfd.org/d-way/log"
+	log "ibfd.org/d-way/log4u"
 
-	"ibfd.org/d-way/config"
+	"ibfd.org/d-way/cfg"
 	"ibfd.org/d-way/doc"
 )
 

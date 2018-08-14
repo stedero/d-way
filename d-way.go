@@ -4,12 +4,11 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os"
 	"strings"
 
-	"ibfd.org/d-way/config"
+	"ibfd.org/d-way/cfg"
 	"ibfd.org/d-way/doc"
-	"ibfd.org/d-way/log"
+	log "ibfd.org/d-way/log4u"
 	"ibfd.org/d-way/prc"
 	"ibfd.org/d-way/rule"
 )
@@ -17,20 +16,8 @@ import (
 const pathPrefix = "/d-way"
 
 func main() {
-	logConfig := cfg.GetLogConfig()
-	if logConfig.Filename == "" {
-		log.SetLevel("DEBUG")
-	} else {
-		logFile, err := os.Create(logConfig.Filename)
-		if err != nil {
-			log.Fatalf("fail to create file %s: %v", logConfig.Filename, err)
-		}
-		logger := io.MultiWriter(os.Stderr, logFile)
-		log.SetLevel(logConfig.Level)
-		log.SetOutput(logger)
-		defer logFile.Close()
-	}
-	log.Info("Starting d-way on port %s", cfg.GetPort())
+	defer cfg.CloseLog()
+	log.Infof("Starting d-way on port %s", cfg.GetPort())
 	server := http.Server{Addr: ":" + cfg.GetPort()}
 	matcher := cfg.GetMatcher()
 	logMatcher(matcher)

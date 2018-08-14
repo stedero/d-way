@@ -3,11 +3,9 @@ package act
 import (
 	"net/http"
 
-	"ibfd.org/d-way/log"
-
+	"ibfd.org/d-way/cfg"
 	"ibfd.org/d-way/doc"
-
-	"ibfd.org/d-way/config"
+	log "ibfd.org/d-way/log4u"
 )
 
 // ActionSDRM defines the action that adds Social DRM statement to a document

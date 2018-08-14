@@ -15,7 +15,7 @@
 
 // TODO: Check license and update comment to reflect the added functionality.
 
-package log
+package log4u
 
 import (
 	"fmt"
