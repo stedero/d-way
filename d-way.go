@@ -59,6 +59,9 @@ func docHandler(matcher *rule.Matcher) http.HandlerFunc {
 				}
 				logResponse(jobResult.Response())
 			}
+		case "OPTIONS":
+			writer.Header().Set("Allow", "GET, DELETE, OPTIONS, POST, PUT")
+			writer.WriteHeader(http.StatusOK)
 		default:
 		}
 	}
