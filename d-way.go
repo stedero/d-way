@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/rs/cors"
 	"ibfd.org/d-way/cfg"
 	"ibfd.org/d-way/doc"
 	log "ibfd.org/d-way/log4u"
@@ -21,8 +22,8 @@ func main() {
 	server := http.Server{Addr: ":" + cfg.GetPort()}
 	matcher := cfg.GetMatcher()
 	logMatcher(matcher)
-	http.HandleFunc("/", docHandler(matcher))
-	http.HandleFunc("/config/", configHandler(cfg.GetConfigData()))
+	http.HandleFunc("/", withCORS(docHandler(matcher)))
+	http.HandleFunc("/config/", withCORS(configHandler(cfg.GetConfigData())))
 	server.ListenAndServe()
 }
 
@@ -46,6 +47,7 @@ func docHandler(matcher *rule.Matcher) http.HandlerFunc {
 				fmt.Fprintf(writer, "Bad request: %v\n", err)
 				log.Errorf("error %v", err)
 			} else {
+				writer.Header().Set("Allow", "GET, DELETE, OPTIONS, POST, PUT")
 				writer.Header().Set("Content-Type", jobResult.ContentType())
 				writer.WriteHeader(200)
 				err = output(writer, jobResult.Reader())
@@ -68,16 +70,28 @@ func output(dst io.Writer, src io.ReadCloser) error {
 	return err
 }
 
-func configHandler(configData []byte) func(http.ResponseWriter, *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
+func configHandler(configData []byte) http.HandlerFunc {
+	return func(writer http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "GET":
-			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(200)
-			w.Write(configData)
+			writer.Header().Set("Allow", "GET, DELETE, OPTIONS, POST, PUT")
+			writer.Header().Set("Content-Type", "application/json")
+			writer.WriteHeader(200)
+			writer.Write(configData)
 		default:
 		}
 	}
+}
+
+func withCORS(handler http.HandlerFunc) http.HandlerFunc {
+	options := cors.Options{
+		Debug:            true,
+		AllowedHeaders:   []string{"authorization"},
+		AllowedOrigins:   []string{"http://localhost:4200"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowCredentials: true}
+	cors := cors.New(options)
+	return cors.Handler(handler).ServeHTTP
 }
 
 func cleanPath(path string) string {
