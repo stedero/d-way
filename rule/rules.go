@@ -22,12 +22,13 @@ type LogConfig struct {
 
 // Matcher defines the rules to match paths.
 type Matcher struct {
-	Comment              string    `json:"comment"`
-	PublicationsBasePath string    `json:"publications_base_path"`
-	CleanURL             string    `json:"clean_url"`
-	SdrmURL              string    `json:"sdrm_url"`
+	Comment              string     `json:"comment"`
+	PublicationsBasePath string     `json:"publications_base_path"`
+	CleanURL             string     `json:"clean_url"`
+	ResolveURL           string     `json:"resolve_url"`
+	SdrmURL              string     `json:"sdrm_url"`
 	Logging              *LogConfig `json:"logging"`
-	Rules                []*Rule   `json:"rules"`
+	Rules                []*Rule    `json:"rules"`
 }
 
 // NewMatcher creates a Matcher.
