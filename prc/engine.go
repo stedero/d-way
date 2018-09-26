@@ -16,6 +16,8 @@ func Exec(job *Job) (*JobResult, error) {
 	jobResult := NewJobResult(len(job.rule.Steps))
 	for _, step := range job.rule.Steps {
 		switch step {
+		case "RESOLVE":
+			result, err = exec(step, resolver(job, ""))
 		case "GET":
 			result, err = exec(step, getter(job))
 		case "CLEAN":
@@ -45,6 +47,12 @@ func exec(step string, action actFunc) (*act.TimedResult, error) {
 	timedResult.End()
 	timedResult.SetStepResult(stepResult)
 	return timedResult, err
+}
+
+func resolver(job *Job, uid string) actFunc {
+	return func() (*act.StepResult, error) {
+		return act.Resolve(uid, job.cookies)
+	}
 }
 
 func getter(job *Job) actFunc {

@@ -20,8 +20,8 @@ var configFilePath string
 var logFilePath string
 var matcher *rule.Matcher
 var configData []byte
-var version string
 var logFile *os.File
+var userAgent string
 
 func init() {
 	var err error
@@ -39,6 +39,15 @@ func init() {
 		log.Fatalf("fail to unmarshal from file %s: %v", configFilePath, err)
 	}
 	logFile = configureLogging(matcher.Logging)
+}
+
+// SetUserAgent set the user agent.
+func SetUserAgent(ua string) {
+	userAgent = ua
+}
+
+func GetUserAgent() string {
+	return userAgent
 }
 
 // GetMatcher returns the rule matcher.

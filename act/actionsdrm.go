@@ -26,6 +26,7 @@ func SDRM(document *doc.Document, cookies []*http.Cookie) (*StepResult, error) {
 	target := actionSDRM.target(document.Path())
 	log.Debugf("Soda: %s\n", target)
 	req, err := http.NewRequest("GET", target, nil)
+	setUserAgent(req)
 	req.Header.Set("Accept", "application/pdf")
 	copyCookies(req, cookies)
 	resp, err := actionSDRM.client.Do(req)

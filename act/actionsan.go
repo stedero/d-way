@@ -24,6 +24,7 @@ func init() {
 func Clean(r io.ReadCloser, cookies []*http.Cookie) (*StepResult, error) {
 	defer r.Close()
 	req, err := http.NewRequest("POST", actionSan.url, r)
+	setUserAgent(req)
 	req.Header.Set("Content-type", "text/html")
 	copyCookies(req, cookies)
 	resp, err := actionSan.client.Do(req)

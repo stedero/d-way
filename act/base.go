@@ -4,6 +4,7 @@ import (
 	"io"
 	"net/http"
 	"time"
+	"ibfd.org/d-way/cfg"
 )
 
 const defaultTimeoutSeconds = 10
@@ -94,6 +95,10 @@ func (timedResult *TimedResult) SetStepResult(stepResult *StepResult) *TimedResu
 	timedResult.response = stepResult.response
 	timedResult.reader = stepResult.reader
 	return timedResult
+}
+
+func setUserAgent(req *http.Request) {
+	req.Header.Set("User-Agent", cfg.GetUserAgent())
 }
 
 func copyCookies(request *http.Request, cookies []*http.Cookie) {

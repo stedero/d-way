@@ -14,11 +14,13 @@ import (
 	"ibfd.org/d-way/rule"
 )
 
+const appName = "d-way"
 const pathPrefix = "/d-way"
 
 func main() {
 	defer cfg.CloseLog()
-	log.Infof("Starting d-way on port %s", cfg.GetPort())
+	cfg.SetUserAgent(appName + "/" + version)
+	log.Infof("Starting %s %s on port %s", appName, version, cfg.GetPort())
 	server := http.Server{Addr: ":" + cfg.GetPort()}
 	matcher := cfg.GetMatcher()
 	logMatcher(matcher)
