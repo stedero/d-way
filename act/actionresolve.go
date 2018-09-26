@@ -21,14 +21,13 @@ func init() {
 }
 
 // Resolve calls the Linkresolver service to resolve a UID to a document path.
-func Resolve(uid string, cookies []*http.Cookie) (*StepResult, error) {
+func Resolve(uid string) (*StepResult, error) {
 	log.Debugf("Resolve: %s?%s\n", actionResolve.url, uid)
 	req, err := http.NewRequest("GET", actionResolve.url, nil)
 	setUserAgent(req)
 	q := req.URL.Query()
 	q.Add("uid", uid)
 	req.URL.RawQuery = q.Encode()
-	copyCookies(req, cookies)
 	resp, err := actionResolve.client.Do(req)
 	if err != nil {
 		return nil, err

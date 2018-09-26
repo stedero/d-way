@@ -15,7 +15,7 @@ func Exec(job *Job, src *doc.Source) (*JobResult, error) {
 	for _, step := range job.rule.Steps {
 		switch step {
 		case "RESOLVE":
-			result, err = exec(step, resolver(job, src))
+			result, err = exec(step, resolver(src))
 		case "GET":
 			result, err = exec(step, getter(src))
 		case "CLEAN":
@@ -47,9 +47,9 @@ func exec(step string, action actFunc) (*act.TimedResult, error) {
 	return timedResult, err
 }
 
-func resolver(job *Job, src *doc.Source) actFunc {
+func resolver(src *doc.Source) actFunc {
 	return func() (*act.StepResult, error) {
-		return act.Resolve(src.String(), job.cookies)
+		return act.Resolve(src.String())
 	}
 }
 
