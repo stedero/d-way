@@ -71,7 +71,7 @@ func docHandler(matcher *rule.Matcher) http.HandlerFunc {
 
 func getSource(rule *rule.Rule, request *http.Request) *doc.Source {
 	if rule.Steps[0] == "RESOLVE" {
-		parts := strings.Split(request.URL.Path, "/")
+		parts := strings.Split(strings.TrimSuffix(request.URL.Path, "/"), "/")
 		return doc.StringSource(parts[len(parts)-1])
 	}
 	return doc.StringSource(cleanPath(request.URL.Path))
