@@ -3,8 +3,6 @@ package rule
 import (
 	"encoding/json"
 	"regexp"
-
-	"ibfd.org/d-way/doc"
 )
 
 // Rule defines a process rule.
@@ -42,10 +40,10 @@ func NewMatcher(data []byte) (*Matcher, error) {
 	return &matcher, err
 }
 
-// Match finds the first rule that matches a document path.
-func (matcher *Matcher) Match(d *doc.Document) *Rule {
+// Match finds the first rule that matches a path.
+func (matcher *Matcher) Match(path string) *Rule {
 	for _, rule := range matcher.Rules {
-		if rule.Regexc.Match([]byte(d.Path())) {
+		if rule.Regexc.Match([]byte(path)) {
 			return rule
 		}
 	}

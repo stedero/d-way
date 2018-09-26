@@ -21,8 +21,7 @@ func init() {
 }
 
 // Clean calls the docsan service to clean a HTML document
-func Clean(r io.ReadCloser, cookies []*http.Cookie) (*StepResult, error) {
-	defer r.Close()
+func Clean(r io.Reader, cookies []*http.Cookie) (*StepResult, error) {
 	req, err := http.NewRequest("POST", actionSan.url, r)
 	setUserAgent(req)
 	req.Header.Set("Content-type", "text/html")

@@ -22,7 +22,7 @@ func init() {
 }
 
 // Get fetches a document.
-func Get(document *doc.Document) (*StepResult, error) {
+func Get(document *doc.Source) (*StepResult, error) {
 	target := actionGet.target(document.Path())
 	log.Debugf("Fetching: %s", target)
 	reader, err := os.Open(target)

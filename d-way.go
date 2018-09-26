@@ -39,10 +39,10 @@ func docHandler(matcher *rule.Matcher) http.HandlerFunc {
 				return
 			}
 			logRequest(request)
-			document := doc.NewDocument(path)
-			rule := matcher.Match(document)
-			job := prc.NewJob(document, rule, request.Cookies())
-			jobResult, err := prc.Exec(job)
+			rule := matcher.Match(path)
+			src := getSource(rule, request)
+			job := prc.NewJob(rule, request.Cookies())
+			jobResult, err := prc.Exec(job, src)
 			if err != nil {
 				writer.Header().Set("Content-Type", "text/plain")
 				writer.WriteHeader(500)
@@ -67,6 +67,14 @@ func docHandler(matcher *rule.Matcher) http.HandlerFunc {
 		default:
 		}
 	}
+}
+
+func getSource(rule *rule.Rule, request *http.Request) *doc.Source {
+	if rule.Steps[0] == "RESOLVE" {
+		parts := strings.Split(request.URL.Path, "/")
+		return doc.StringSource(parts[len(parts)-1])
+	}
+	return doc.StringSource(cleanPath(request.URL.Path))
 }
 
 func output(dst io.Writer, src io.ReadCloser) error {

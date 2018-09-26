@@ -1,29 +1,27 @@
 package prc
 
 import (
-	"io"
-
 	"ibfd.org/d-way/act"
+	"ibfd.org/d-way/doc"
 )
 
 type actFunc func() (*act.StepResult, error)
 
-// Exec executes all processing steps for a document
-func Exec(job *Job) (*JobResult, error) {
+// Exec executes all processing steps for a job.
+func Exec(job *Job, src *doc.Source) (*JobResult, error) {
 	var result *act.TimedResult
-	var reader io.ReadCloser
 	var err error
 	jobResult := NewJobResult(len(job.rule.Steps))
 	for _, step := range job.rule.Steps {
 		switch step {
 		case "RESOLVE":
-			result, err = exec(step, resolver(job, ""))
+			result, err = exec(step, resolver(job, src))
 		case "GET":
-			result, err = exec(step, getter(job))
+			result, err = exec(step, getter(src))
 		case "CLEAN":
-			result, err = exec(step, cleaner(job, reader))
+			result, err = exec(step, cleaner(job, src))
 		case "SDRM":
-			result, err = exec(step, soda(job))
+			result, err = exec(step, soda(job, src))
 		default:
 			result, err = nil, nil
 		}
@@ -31,7 +29,7 @@ func Exec(job *Job) (*JobResult, error) {
 			return nil, err
 		}
 		if result != nil {
-			reader = result.Reader()
+			src = doc.ReaderSource(result.Reader())
 			jobResult.add(result)
 		}
 	}
@@ -49,26 +47,26 @@ func exec(step string, action actFunc) (*act.TimedResult, error) {
 	return timedResult, err
 }
 
-func resolver(job *Job, uid string) actFunc {
+func resolver(job *Job, src *doc.Source) actFunc {
 	return func() (*act.StepResult, error) {
-		return act.Resolve(uid, job.cookies)
+		return act.Resolve(src.String(), job.cookies)
 	}
 }
 
-func getter(job *Job) actFunc {
+func getter(src *doc.Source) actFunc {
 	return func() (*act.StepResult, error) {
-		return act.Get(job.document)
+		return act.Get(src)
 	}
 }
 
-func cleaner(job *Job, r io.ReadCloser) actFunc {
+func cleaner(job *Job, src *doc.Source) actFunc {
 	return func() (*act.StepResult, error) {
-		return act.Clean(r, job.cookies)
+		return act.Clean(src.Reader(), job.cookies)
 	}
 }
 
-func soda(job *Job) actFunc {
+func soda(job *Job, src *doc.Source) actFunc {
 	return func() (*act.StepResult, error) {
-		return act.SDRM(job.document, job.cookies)
+		return act.SDRM(src, job.cookies)
 	}
 }

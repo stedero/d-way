@@ -5,27 +5,25 @@ import (
 	"net/http"
 
 	"ibfd.org/d-way/act"
-	"ibfd.org/d-way/doc"
 	"ibfd.org/d-way/rule"
 )
 
-// Job describes the steps to be executed for a document
+// Job defines the rules and hold results for the steps to execute.
 type Job struct {
-	document *doc.Document
-	rule     *rule.Rule
-	cookies  []*http.Cookie
+	rule    *rule.Rule
+	cookies []*http.Cookie
 }
 
 // JobResult the result of executing a job.
 type JobResult struct {
 	steps  []*act.TimedResult
 	reader io.ReadCloser
-	last *act.TimedResult
+	last   *act.TimedResult
 }
 
 // NewJob creates a Job
-func NewJob(d *doc.Document, r *rule.Rule, cookies []*http.Cookie) *Job {
-	return &Job{d, r, cookies}
+func NewJob(r *rule.Rule, cookies []*http.Cookie) *Job {
+	return &Job{r, cookies}
 }
 
 // NewJobResult creates a job result.
@@ -46,11 +44,16 @@ func (jobResult *JobResult) Reader() io.ReadCloser {
 
 // ContentType returns the content type of the last step that was executed.
 func (jobResult *JobResult) ContentType() string {
-	response := jobResult.Response()
+	contentType := "";
+	response := jobResult.last.Response()
 	if response != nil {
-		return response.Header["Content-Type"][0]
+		contentType = response.Header["Content-Type"][0]
 	}
-	return jobResult.last.MimeType()
+	if contentType != "" {
+		return contentType
+	} else {
+		return jobResult.last.MimeType()
+	}
 }
 
 // Response get the response of the last step that was executed.

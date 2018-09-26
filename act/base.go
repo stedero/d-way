@@ -94,6 +94,7 @@ func (timedResult *TimedResult) End() *TimedResult {
 func (timedResult *TimedResult) SetStepResult(stepResult *StepResult) *TimedResult {
 	timedResult.response = stepResult.response
 	timedResult.reader = stepResult.reader
+	timedResult.mimeType = stepResult.mimeType
 	return timedResult
 }
 

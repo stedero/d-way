@@ -22,7 +22,7 @@ func init() {
 }
 
 // SDRM calls the Soda service to add Social DRM to a document.
-func SDRM(document *doc.Document, cookies []*http.Cookie) (*StepResult, error) {
+func SDRM(document *doc.Source, cookies []*http.Cookie) (*StepResult, error) {
 	target := actionSDRM.target(document.Path())
 	log.Debugf("Soda: %s\n", target)
 	req, err := http.NewRequest("GET", target, nil)

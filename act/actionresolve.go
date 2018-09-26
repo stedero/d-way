@@ -17,12 +17,12 @@ var actionResolve *ActionResolve
 
 func init() {
 	config := cfg.GetMatcher()
-	actionResolve = &ActionResolve{config.CleanURL, NewHTTPClient()}
+	actionResolve = &ActionResolve{config.ResolveURL, NewHTTPClient()}
 }
 
 // Resolve calls the Linkresolver service to resolve a UID to a document path.
 func Resolve(uid string, cookies []*http.Cookie) (*StepResult, error) {
-	log.Debugf("Resolve: %s\n", actionResolve.url)
+	log.Debugf("Resolve: %s?%s\n", actionResolve.url, uid)
 	req, err := http.NewRequest("GET", actionResolve.url, nil)
 	setUserAgent(req)
 	q := req.URL.Query()
