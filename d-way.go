@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/rs/cors"
+	"ibfd.org/d-way/act"
 	"ibfd.org/d-way/cfg"
 	"ibfd.org/d-way/doc"
 	log "ibfd.org/d-way/log4u"
@@ -38,18 +39,18 @@ func docHandler(matcher *rule.Matcher) http.HandlerFunc {
 				writer.WriteHeader(404)
 				return
 			}
-			logRequest(request)
 			rule := matcher.Match(path)
-			src := getSource(rule, request)
+			src := getSource(rule, path)
 			job := prc.NewJob(rule, request.Cookies())
 			jobResult, err := prc.Exec(job, src)
 			if err != nil {
+				statusCode, msg := statusAndMessage(err)
 				writer.Header().Set("Content-Type", "text/plain")
-				writer.WriteHeader(500)
-				fmt.Fprintf(writer, "Bad request: %v\n", err)
-				log.Errorf("error %v", err)
+				writer.WriteHeader(statusCode)
+				fmt.Fprintf(writer, msg)
+				log.Errorf("%d - %s", statusCode, msg)
 			} else {
-				writer.Header().Set("Allow", "GET, DELETE, OPTIONS, POST, PUT")
+				writer.Header().Set("Allow", "GET, OPTIONS")
 				writer.Header().Set("Content-Type", jobResult.ContentType())
 				writer.WriteHeader(200)
 				err = output(writer, jobResult.Reader())
@@ -57,24 +58,33 @@ func docHandler(matcher *rule.Matcher) http.HandlerFunc {
 					log.Errorf("error %v", err)
 				}
 				for _, result := range jobResult.Steps() {
-					log.Debugf("Step %s took %s\n", result.Step, result.Duration)
+					log.Debugf("%s took %s\n", result.Step, result.Duration)
 				}
-				logResponse(jobResult.Response())
+				total := jobResult.Total()
+				log.Debugf("%s took %s\n", total.Step, total.Duration)
 			}
 		case "OPTIONS":
-			writer.Header().Set("Allow", "GET, DELETE, OPTIONS, POST, PUT")
+			writer.Header().Set("Allow", "GET, OPTIONS")
 			writer.WriteHeader(http.StatusOK)
 		default:
 		}
 	}
 }
 
-func getSource(rule *rule.Rule, request *http.Request) *doc.Source {
+func statusAndMessage(err error) (int, string) {
+	savedErr := err
+	if err, ok := err.(*act.ActionError); ok {
+		return err.StatusCode, err.Msg
+	}
+	return http.StatusInternalServerError, fmt.Sprintf("Internal server error: %v", savedErr)
+}
+
+func getSource(rule *rule.Rule, path string) *doc.Source {
 	if rule.Steps[0] == "RESOLVE" {
-		parts := strings.Split(strings.TrimSuffix(request.URL.Path, "/"), "/")
+		parts := strings.Split(path, "/")
 		return doc.StringSource(parts[len(parts)-1])
 	}
-	return doc.StringSource(cleanPath(request.URL.Path))
+	return doc.StringSource(path)
 }
 
 func output(dst io.Writer, src io.ReadCloser) error {
@@ -87,7 +97,7 @@ func configHandler(configData []byte) http.HandlerFunc {
 	return func(writer http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "GET":
-			writer.Header().Set("Allow", "GET, DELETE, OPTIONS, POST, PUT")
+			writer.Header().Set("Allow", "GET, OPTIONS")
 			writer.Header().Set("Content-Type", "application/json")
 			writer.WriteHeader(200)
 			writer.Write(configData)
@@ -101,14 +111,14 @@ func withCORS(handler http.HandlerFunc) http.HandlerFunc {
 		Debug:            true,
 		AllowedHeaders:   []string{"authorization"},
 		AllowedOrigins:   []string{"http://localhost:4200"},
-		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedMethods:   []string{"GET", "OPTIONS"},
 		AllowCredentials: true}
 	cors := cors.New(options)
 	return cors.Handler(handler).ServeHTTP
 }
 
 func cleanPath(path string) string {
-	return strings.TrimPrefix(path, pathPrefix)
+	return strings.TrimSuffix(strings.TrimPrefix(path, pathPrefix), "/")
 }
 
 func notFound(w http.ResponseWriter, url string) {

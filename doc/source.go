@@ -30,7 +30,7 @@ func (src *Source) Path() string {
 }
 
 func (src *Source) String() string {
-	if src.content == "" {
+	if src.content == "" && src.reader != nil {
 		defer src.reader.Close()
 		b, _ := ioutil.ReadAll(src.reader)
 		src.content = string(b)

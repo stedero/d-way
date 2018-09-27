@@ -1,9 +1,8 @@
 package act
 
 import (
+	"net/http"
 	"os"
-
-	log "ibfd.org/d-way/log4u"
 
 	"ibfd.org/d-way/cfg"
 	"ibfd.org/d-way/doc"
@@ -23,9 +22,15 @@ func init() {
 
 // Get fetches a document.
 func Get(document *doc.Source) (*StepResult, error) {
+	path := document.Path()
+	if path == "" {
+		return nil, &ActionError{http.StatusBadRequest, "no file specified"}
+	}
 	target := actionGet.target(document.Path())
-	log.Debugf("Fetching: %s", target)
 	reader, err := os.Open(target)
+	if err != nil {
+		return nil, &ActionError{http.StatusNotFound, err.Error()}
+	}
 	return NewStepResult().SetReader(reader).SetMimeType(document.MimeType()), err
 }
 

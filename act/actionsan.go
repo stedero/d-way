@@ -30,5 +30,8 @@ func Clean(r io.Reader, cookies []*http.Cookie) (*StepResult, error) {
 	if err != nil {
 		return nil, err
 	}
+	if resp.StatusCode != http.StatusOK {
+		return nil, &ActionError{resp.StatusCode, "failed to sanitize document"}
+	}
 	return NewStepResult().SetResponse(resp), err
 }

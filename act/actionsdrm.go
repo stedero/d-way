@@ -2,10 +2,9 @@ package act
 
 import (
 	"net/http"
-
+	"fmt"
 	"ibfd.org/d-way/cfg"
 	"ibfd.org/d-way/doc"
-	log "ibfd.org/d-way/log4u"
 )
 
 // ActionSDRM defines the action that adds Social DRM statement to a document
@@ -24,7 +23,6 @@ func init() {
 // SDRM calls the Soda service to add Social DRM to a document.
 func SDRM(document *doc.Source, cookies []*http.Cookie) (*StepResult, error) {
 	target := actionSDRM.target(document.Path())
-	log.Debugf("Soda: %s\n", target)
 	req, err := http.NewRequest("GET", target, nil)
 	setUserAgent(req)
 	req.Header.Set("Accept", "application/pdf")
@@ -33,7 +31,9 @@ func SDRM(document *doc.Source, cookies []*http.Cookie) (*StepResult, error) {
 	if err != nil {
 		return nil, err
 	}
-	log.Debugf("Soda result status: %d", resp.StatusCode)
+	if resp.StatusCode != http.StatusOK {
+		return nil, &ActionError{resp.StatusCode, fmt.Sprintf("failed to add social DRM to %s", document.Path())}
+	}
 	return NewStepResult().SetResponse(resp), err
 }
 

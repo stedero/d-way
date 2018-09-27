@@ -19,6 +19,7 @@ type JobResult struct {
 	steps  []*act.TimedResult
 	reader io.ReadCloser
 	last   *act.TimedResult
+	total  *act.TimedResult
 }
 
 // NewJob creates a Job
@@ -29,6 +30,14 @@ func NewJob(r *rule.Rule, cookies []*http.Cookie) *Job {
 // NewJobResult creates a job result.
 func NewJobResult(stepCount int) *JobResult {
 	return &JobResult{steps: make([]*act.TimedResult, 0, stepCount)}
+}
+
+func (jobResult *JobResult) Start() {
+	jobResult.total = act.NewTimedResult("Total").Start()
+}
+
+func (jobResult *JobResult) End() {
+	jobResult.total.End()
 }
 
 func (jobResult *JobResult) add(timedResult *act.TimedResult) {
@@ -64,4 +73,9 @@ func (jobResult *JobResult) Response() *http.Response {
 // Steps returns the steps that where executed.
 func (jobResult *JobResult) Steps() []*act.TimedResult {
 	return jobResult.steps
+}
+
+// Total returns the job execution result.
+func (jobResult *JobResult) Total() *act.TimedResult {
+	return jobResult.total
 }

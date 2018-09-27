@@ -3,6 +3,7 @@ package prc
 import (
 	"ibfd.org/d-way/act"
 	"ibfd.org/d-way/doc"
+	log "ibfd.org/d-way/log4u"
 )
 
 type actFunc func() (*act.StepResult, error)
@@ -12,6 +13,7 @@ func Exec(job *Job, src *doc.Source) (*JobResult, error) {
 	var result *act.TimedResult
 	var err error
 	jobResult := NewJobResult(len(job.rule.Steps))
+	jobResult.Start()
 	for _, step := range job.rule.Steps {
 		switch step {
 		case "RESOLVE":
@@ -23,7 +25,7 @@ func Exec(job *Job, src *doc.Source) (*JobResult, error) {
 		case "SDRM":
 			result, err = exec(step, soda(job, src))
 		default:
-			result, err = nil, nil
+			log.Warnf("undefined step: %s", step)
 		}
 		if err != nil {
 			return nil, err
@@ -33,6 +35,7 @@ func Exec(job *Job, src *doc.Source) (*JobResult, error) {
 			jobResult.add(result)
 		}
 	}
+	jobResult.End()
 	return jobResult, err
 }
 

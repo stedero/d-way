@@ -1,9 +1,11 @@
 package act
 
 import (
+	"fmt"
 	"io"
 	"net/http"
 	"time"
+
 	"ibfd.org/d-way/cfg"
 )
 
@@ -23,6 +25,16 @@ type TimedResult struct {
 	end      time.Time
 	Duration time.Duration
 	StepResult
+}
+
+// ActionError defines errors that are created by actions.
+type ActionError struct {
+	StatusCode int
+	Msg        string
+}
+
+func (e *ActionError) Error() string {
+	return fmt.Sprintf("%d - %s", e.StatusCode, e.Msg)
 }
 
 // NewHTTPClient creates a HTPP client with a default timeout.
