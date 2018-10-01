@@ -25,16 +25,17 @@ func init() {
 // Resolve calls the Linkresolver service to resolve a UID to a document path.
 func Resolve(src *doc.Source) (*StepResult, error) {
 	req, err := http.NewRequest("GET", actionResolve.url, nil)
+	uid := uid(src)
 	setUserAgent(req)
 	q := req.URL.Query()
-	q.Add("uid", uid(src))
+	q.Add("uid", uid)
 	req.URL.RawQuery = q.Encode()
 	resp, err := actionResolve.client.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	if resp.StatusCode != http.StatusOK {
-		return nil, &ActionError{resp.StatusCode, fmt.Sprintf("failed to resolve %s", uid)}
+		return nil, &ActionError{resp.StatusCode, fmt.Sprintf("failed to resolve UID: %s", uid)}
 	}
 	return NewStepResult().SetResponse(resp), err
 }
