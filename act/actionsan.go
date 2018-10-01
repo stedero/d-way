@@ -1,10 +1,10 @@
 package act
 
 import (
-	"io"
 	"net/http"
 
 	"ibfd.org/d-way/cfg"
+	"ibfd.org/d-way/doc"
 )
 
 // ActionSan defines the action that sanitizes a document.
@@ -21,8 +21,8 @@ func init() {
 }
 
 // Clean calls the docsan service to clean a HTML document
-func Clean(r io.Reader, cookies []*http.Cookie) (*StepResult, error) {
-	req, err := http.NewRequest("POST", actionSan.url, r)
+func Clean(src *doc.Source, cookies []*http.Cookie) (*StepResult, error) {
+	req, err := http.NewRequest("POST", actionSan.url, src.Reader())
 	setUserAgent(req)
 	req.Header.Set("Content-type", "text/html")
 	copyCookies(req, cookies)

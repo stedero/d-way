@@ -35,12 +35,8 @@ func docHandler(matcher *rule.Matcher) http.HandlerFunc {
 		switch request.Method {
 		case "GET":
 			path := cleanPath(request.URL.Path)
-			if path == "/favicon.ico" {
-				writer.WriteHeader(404)
-				return
-			}
 			rule := matcher.Match(path)
-			src := getSource(rule, path)
+			src := doc.StringSource(path)
 			job := prc.NewJob(rule, request.Cookies())
 			jobResult, err := prc.Exec(job, src)
 			if err != nil {
@@ -57,11 +53,7 @@ func docHandler(matcher *rule.Matcher) http.HandlerFunc {
 				if err != nil {
 					log.Errorf("error %v", err)
 				}
-				for _, result := range jobResult.Steps() {
-					log.Debugf("%s took %s\n", result.Step, result.Duration)
-				}
-				total := jobResult.Total()
-				log.Debugf("%s took %s\n", total.Step, total.Duration)
+				logJobResult(jobResult)
 			}
 		case "OPTIONS":
 			writer.Header().Set("Allow", "GET, OPTIONS")
@@ -77,14 +69,6 @@ func statusAndMessage(err error) (int, string) {
 		return err.StatusCode, err.Msg
 	}
 	return http.StatusInternalServerError, fmt.Sprintf("Internal server error: %v", savedErr)
-}
-
-func getSource(rule *rule.Rule, path string) *doc.Source {
-	if rule.Steps[0] == "RESOLVE" {
-		parts := strings.Split(path, "/")
-		return doc.StringSource(parts[len(parts)-1])
-	}
-	return doc.StringSource(path)
 }
 
 func output(dst io.Writer, src io.ReadCloser) error {
@@ -156,4 +140,12 @@ func logResponse(r *http.Response) {
 			log.Debugf("cookie[%d] = %v\n", i, cookie)
 		}
 	}
+}
+
+func logJobResult(jobResult *prc.JobResult) {
+	for _, result := range jobResult.Steps() {
+		log.Debugf("%s took %s\n", result.Step, result.Duration)
+	}
+	total := jobResult.Total()
+	log.Debugf("%s took %s\n", total.Step, total.Duration)
 }

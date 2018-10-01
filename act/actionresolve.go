@@ -3,8 +3,10 @@ package act
 import (
 	"fmt"
 	"net/http"
+	"strings"
 
 	"ibfd.org/d-way/cfg"
+	"ibfd.org/d-way/doc"
 )
 
 // ActionResolve defines the action that resolves a UID to a document path.
@@ -21,11 +23,11 @@ func init() {
 }
 
 // Resolve calls the Linkresolver service to resolve a UID to a document path.
-func Resolve(uid string) (*StepResult, error) {
+func Resolve(src *doc.Source) (*StepResult, error) {
 	req, err := http.NewRequest("GET", actionResolve.url, nil)
 	setUserAgent(req)
 	q := req.URL.Query()
-	q.Add("uid", uid)
+	q.Add("uid", uid(src))
 	req.URL.RawQuery = q.Encode()
 	resp, err := actionResolve.client.Do(req)
 	if err != nil {
@@ -35,4 +37,9 @@ func Resolve(uid string) (*StepResult, error) {
 		return nil, &ActionError{resp.StatusCode, fmt.Sprintf("failed to resolve %s", uid)}
 	}
 	return NewStepResult().SetResponse(resp), err
+}
+
+func uid(src *doc.Source) string {
+	parts := strings.Split(src.String(), "/")
+	return parts[len(parts)-1]
 }

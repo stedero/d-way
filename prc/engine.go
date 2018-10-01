@@ -52,7 +52,7 @@ func exec(step string, action actFunc) (*act.TimedResult, error) {
 
 func resolver(src *doc.Source) actFunc {
 	return func() (*act.StepResult, error) {
-		return act.Resolve(src.String())
+		return act.Resolve(src)
 	}
 }
 
@@ -64,7 +64,7 @@ func getter(src *doc.Source) actFunc {
 
 func cleaner(job *Job, src *doc.Source) actFunc {
 	return func() (*act.StepResult, error) {
-		return act.Clean(src.Reader(), job.cookies)
+		return act.Clean(src, job.cookies)
 	}
 }
 
