@@ -94,7 +94,7 @@ func withCORS(handler http.HandlerFunc) http.HandlerFunc {
 	options := cors.Options{
 		Debug:            true,
 		AllowedHeaders:   []string{"authorization"},
-		AllowedOrigins:   []string{"http://localhost:4200"},
+		AllowedOrigins:   []string{"http://localhost:4200", "http://steef.ibfd.org:4200"},
 		AllowedMethods:   []string{"GET", "OPTIONS"},
 		AllowCredentials: true}
 	cors := cors.New(options)
