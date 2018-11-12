@@ -7,9 +7,10 @@ import (
 
 // Rule defines a process rule.
 type Rule struct {
-	Regex  string `json:"regex"`
-	Regexc *regexp.Regexp
-	Steps  []string `json:"steps"`
+	Regex    string `json:"regex"`
+	Regexc   *regexp.Regexp
+	MimeType string   `json:"mimeType"`
+	Steps    []string `json:"steps"`
 }
 
 // LogConfig defines the logging configuration.
@@ -41,10 +42,12 @@ func NewMatcher(data []byte) (*Matcher, error) {
 }
 
 // Match finds the first rule that matches a path.
-func (matcher *Matcher) Match(path string) *Rule {
+func (matcher *Matcher) Match(path, mimeType string) *Rule {
 	for _, rule := range matcher.Rules {
 		if rule.Regexc.Match([]byte(path)) {
-			return rule
+			if rule.MimeType == "" || mimeType == rule.MimeType {
+				return rule
+			}
 		}
 	}
 	return matcher.Rules[len(matcher.Rules)-1]

@@ -16,14 +16,16 @@ func Exec(job *Job, src *doc.Source) (*JobResult, error) {
 	jobResult.Start()
 	for _, step := range job.rule.Steps {
 		switch step {
-		case "RESOLVE":
-			result, err = exec(step, resolver(src))
-		case "GET":
-			result, err = exec(step, getter(src))
 		case "CLEAN":
 			result, err = exec(step, cleaner(job, src))
+		case "GET":
+			result, err = exec(step, getter(src))
+		case "RESOLVE":
+			result, err = exec(step, resolver(src))
 		case "SDRM":
 			result, err = exec(step, soda(job, src))
+		case "XTOJ":
+			result, err = exec(step, xtoj(job, src))
 		default:
 			log.Warnf("undefined step: %s", step)
 		}
@@ -71,5 +73,11 @@ func cleaner(job *Job, src *doc.Source) actFunc {
 func soda(job *Job, src *doc.Source) actFunc {
 	return func() (*act.StepResult, error) {
 		return act.SDRM(src, job.cookies)
+	}
+}
+
+func xtoj(job *Job, src *doc.Source) actFunc {
+	return func() (*act.StepResult, error) {
+		return act.XTOJ(src, job.cookies)
 	}
 }

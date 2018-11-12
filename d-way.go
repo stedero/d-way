@@ -35,7 +35,8 @@ func docHandler(matcher *rule.Matcher) http.HandlerFunc {
 		switch request.Method {
 		case "GET":
 			path := cleanPath(request.URL.Path)
-			rule := matcher.Match(path)
+			mimeType := request.Header.Get("Accept")
+			rule := matcher.Match(path, mimeType)
 			src := doc.StringSource(path)
 			job := prc.NewJob(rule, request.Cookies())
 			jobResult, err := prc.Exec(job, src)
@@ -117,6 +118,9 @@ func logMatcher(matcher *rule.Matcher) {
 	for i, rule := range matcher.Rules {
 		log.Debugf("\trule[%d]:", i)
 		log.Debugf("\t\tregex: %s", rule.Regex)
+		if rule.MimeType != "" {
+			log.Debugf("\t\tmimeType: %s", rule.MimeType)
+		}
 		log.Debugf("\t\tsteps: %s", strings.Join(rule.Steps, ", "))
 	}
 }

@@ -10,7 +10,14 @@
     },
     "rules": [
         {
-            "regex": "/data/tns/docs/html/.*\\.html",
+            "regex": "/data/.*/html/.*\\.html",
+            "steps": [
+                "GET",
+                "CLEAN"
+            ]
+        },
+        {
+            "regex": "/collections/.*/html/.*\\.html",
             "steps": [
                 "GET",
                 "CLEAN"
@@ -24,6 +31,21 @@
         },
         {
             "regex": "/linkresolver/static/.*",
+            "steps": [
+                "RESOLVE",
+                "GET",
+                "CLEAN"
+            ]
+        },
+        {
+            "regex": "^/(data|collections)/.*/xml/.*\\.xml$",
+            "mimeType": "application/json",
+            "steps": [
+                "XTOJ"
+            ]
+        },
+        {
+            "regex": "/document/.*",
             "steps": [
                 "RESOLVE",
                 "GET",
