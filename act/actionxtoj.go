@@ -22,5 +22,5 @@ func init() {
 
 // XTOJ calls the xtoj service to to convert a XML document to JSON.
 func XTOJ(src *doc.Source, cookies []*http.Cookie) (*StepResult, error) {
-	return nil, &ActionError{405, "XTOJ action not implemented yet."}
+	return nil, &ActionError{http.StatusNotAcceptable, "XTOJ action not implemented yet."}
 }

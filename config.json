@@ -45,6 +45,12 @@
             ]
         },
         {
+            "regex": "^/(data|collections)/.*/xml/.*\\.json$",
+            "steps": [
+                "XTOJ"
+            ]
+        },
+        {
             "regex": "/document/.*",
             "steps": [
                 "RESOLVE",
