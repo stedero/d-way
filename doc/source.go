@@ -56,6 +56,11 @@ func (src *Source) MimeType() string {
 	return mime.TypeByExtension(extension(src.String()))
 }
 
+// Extension gives the extension if the source refers to a file.
+func (src *Source) Extension() string {
+	return extension(src.Path())
+}
+
 func extension(path string) string {
 	dotpos := strings.LastIndex(path, ".")
 	if dotpos < 0 {

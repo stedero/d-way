@@ -26,6 +26,7 @@ type Matcher struct {
 	CleanURL             string     `json:"clean_url"`
 	ResolveURL           string     `json:"resolve_url"`
 	SdrmURL              string     `json:"sdrm_url"`
+	XtojURL              string     `json:"xtoj_url"`
 	Logging              *LogConfig `json:"logging"`
 	Rules                []*Rule    `json:"rules"`
 }

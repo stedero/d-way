@@ -4,6 +4,7 @@
     "clean_url": "http://development6.ibfd.org:9997/",
     "resolve_url": "https://dev-online.ibfd.org/linkresolver/resolve",
     "sdrm_url": "https://dev-online.ibfd.org/soda",
+    "xtoj_url": "http://localhost:4567",
     "logging": {
         "filename": "./d-way.log",
         "level": "DEBUG"
