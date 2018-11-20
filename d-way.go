@@ -34,6 +34,7 @@ func docHandler(matcher *rule.Matcher) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		switch request.Method {
 		case "GET":
+			log.Debug("start")
 			path := cleanPath(request.URL.Path)
 			mimeType := request.Header.Get("Accept")
 			rule := matcher.Match(path, mimeType)
@@ -54,8 +55,9 @@ func docHandler(matcher *rule.Matcher) http.HandlerFunc {
 				if err != nil {
 					log.Errorf("error %v", err)
 				}
-				logJobResult(jobResult)
+				// logJobResult(jobResult)
 			}
+			log.Debug("end")
 		case "OPTIONS":
 			writer.Header().Set("Allow", "GET, OPTIONS")
 			writer.WriteHeader(http.StatusOK)
