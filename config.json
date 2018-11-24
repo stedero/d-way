@@ -52,6 +52,7 @@
         {
             "regex": "^/(data|collections)/.*/xml/.*\\.json$",
             "steps": [
+                "STAT",
                 "XTOJ"
             ]
         },
@@ -67,6 +68,7 @@
         {
             "regex": ".*",
             "steps": [
+                "STAT",
                 "GET"
             ]
         }
