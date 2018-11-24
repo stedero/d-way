@@ -129,12 +129,6 @@ func cleanPath(path string) string {
 	return strings.TrimSuffix(strings.TrimPrefix(path, pathPrefix), "/")
 }
 
-func notFound(w http.ResponseWriter, url string) {
-	w.Header().Set("Content-Type", "text/plain")
-	w.WriteHeader(404)
-	w.Write([]byte(url))
-}
-
 func logMatcher(matcher *rule.Matcher) {
 	log.Debugf("%s", matcher.Comment)
 	log.Debug("rules:")
