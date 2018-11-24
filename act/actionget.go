@@ -31,7 +31,7 @@ func Get(document *doc.Source) (*StepResult, error) {
 	if err != nil {
 		return nil, &ActionError{http.StatusNotFound, err.Error()}
 	}
-	return NewStepResult().SetReader(reader).SetMimeType(document.MimeType()), err
+	return NewStepResult().SetReader(reader).SetMimeType(document.MimeType()).SetStatusCode(http.StatusOK), err
 }
 
 func (action *ActionGet) target(path string) string {

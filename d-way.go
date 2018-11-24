@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/rs/cors"
 	"ibfd.org/d-way/act"
@@ -39,26 +40,36 @@ func docHandler(matcher *rule.Matcher) http.HandlerFunc {
 			mimeType := request.Header.Get("Accept")
 			rule := matcher.Match(path, mimeType)
 			src := doc.StringSource(path)
-			job := prc.NewJob(rule, request.Cookies())
+			job := prc.NewJob(rule, request.Cookies(), requestModSinceDate(request))
 			jobResult, err := prc.Exec(job, src)
 			if err != nil {
 				statusCode, msg := statusAndMessage(err)
+				writer.Header().Set("Server", cfg.GetUserAgent())
 				writer.Header().Set("Content-Type", "text/plain")
 				writer.WriteHeader(statusCode)
 				fmt.Fprintf(writer, msg)
 				log.Errorf("%d - %s", statusCode, msg)
 			} else {
 				writer.Header().Set("Allow", "GET, OPTIONS")
+				writer.Header().Set("Server", cfg.GetUserAgent())
 				writer.Header().Set("Content-Type", jobResult.ContentType())
-				writer.WriteHeader(200)
-				err = output(writer, jobResult.Reader())
-				if err != nil {
-					log.Errorf("error %v", err)
+				lastModifiedDate := jobResult.LastModifiedDate()
+				if lastModifiedDate != "" {
+					writer.Header().Set("Cache-Control", "No-Cache")
+					writer.Header().Set("Last-Modified", lastModifiedDate)
 				}
-				// logJobResult(jobResult)
+				statusCode := jobResult.StatusCode()
+				writer.WriteHeader(statusCode)
+				if statusCode != http.StatusNotModified {
+					err = output(writer, jobResult.Reader())
+					if err != nil {
+						log.Errorf("error %v", err)
+					}
+				}
 			}
 			log.Debug("end")
 		case "OPTIONS":
+			writer.Header().Set("Server", cfg.GetUserAgent())
 			writer.Header().Set("Allow", "GET, OPTIONS")
 			writer.WriteHeader(http.StatusOK)
 		default:
@@ -86,6 +97,7 @@ func configHandler(configData []byte) http.HandlerFunc {
 		case "GET":
 			writer.Header().Set("Allow", "GET, OPTIONS")
 			writer.Header().Set("Content-Type", "application/json")
+			writer.Header().Set("Server", cfg.GetUserAgent())
 			writer.WriteHeader(200)
 			writer.Write(configData)
 		default:
@@ -102,6 +114,15 @@ func withCORS(handler http.HandlerFunc) http.HandlerFunc {
 		AllowCredentials: true}
 	cors := cors.New(options)
 	return cors.Handler(handler).ServeHTTP
+}
+
+func requestModSinceDate(request *http.Request) *time.Time {
+	modSinceDateStr := request.Header.Get("If-Modified-Since")
+	msd, err := time.Parse(cfg.LastModifiedDateFormat, modSinceDateStr)
+	if err == nil {
+		return &msd
+	}
+	return nil
 }
 
 func cleanPath(path string) string {

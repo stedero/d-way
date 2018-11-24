@@ -13,6 +13,7 @@
         {
             "regex": "/data/.*/html/.*\\.html",
             "steps": [
+                "STAT",
                 "GET",
                 "CLEAN"
             ]
@@ -20,6 +21,7 @@
         {
             "regex": "/collections/.*/html/.*\\.html",
             "steps": [
+                "STAT",
                 "GET",
                 "CLEAN"
             ]
@@ -34,6 +36,7 @@
             "regex": "/linkresolver/static/.*",
             "steps": [
                 "RESOLVE",
+                "STAT",
                 "GET",
                 "CLEAN"
             ]
@@ -42,6 +45,7 @@
             "regex": "^/(data|collections)/.*/xml/.*\\.xml$",
             "mimeType": "application/json",
             "steps": [
+                "STAT",
                 "XTOJ"
             ]
         },
@@ -55,6 +59,7 @@
             "regex": "/document/.*",
             "steps": [
                 "RESOLVE",
+                "STAT",
                 "GET",
                 "CLEAN"
             ]

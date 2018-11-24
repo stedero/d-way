@@ -1,6 +1,7 @@
 package cfg
 
 import (
+	"time"
 	"flag"
 	"io"
 	"io/ioutil"
@@ -15,6 +16,9 @@ import (
 const defaultPort = "8080"
 const defaultConfigFilePath = "config.json"
 const defaultLogLevel = "DEBUG"
+
+// LastModifiedDateFormat defines the format for HTTP headers Last-Modified and If-Modified-Since.
+const LastModifiedDateFormat = time.RFC1123
 
 var configFilePath string
 var logFilePath string

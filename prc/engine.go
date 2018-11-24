@@ -14,27 +14,36 @@ func Exec(job *Job, src *doc.Source) (*JobResult, error) {
 	var err error
 	jobResult := NewJobResult(len(job.rule.Steps))
 	jobResult.Start()
+	var statResult *act.TimedResult
 	for _, step := range job.rule.Steps {
-		switch step {
-		case "CLEAN":
-			result, err = exec(step, cleaner(job, src))
-		case "GET":
-			result, err = exec(step, getter(src))
-		case "RESOLVE":
-			result, err = exec(step, resolver(src))
-		case "SDRM":
-			result, err = exec(step, soda(job, src))
-		case "XTOJ":
-			result, err = exec(step, xtoj(job, src))
-		default:
-			log.Warnf("undefined step: %s", step)
-		}
-		if err != nil {
-			return nil, err
-		}
-		if result != nil {
-			src = doc.ReaderSource(result.Reader())
-			jobResult.add(result)
+		if !jobResult.Done() {
+			statResult = nil
+			log.Debugf("executing %s", step)
+			switch step {
+			case "CLEAN":
+				result, err = exec(step, cleaner(job, src))
+			case "GET":
+				result, err = exec(step, getter(src))
+			case "RESOLVE":
+				result, err = exec(step, resolver(src))
+			case "SDRM":
+				result, err = exec(step, soda(job, src))
+			case "STAT":
+				statResult, err = exec(step, stat(job, src))
+			case "XTOJ":
+				result, err = exec(step, xtoj(job, src))
+			default:
+				log.Warnf("undefined step: %s", step)
+			}
+			if err != nil {
+				return nil, err
+			}
+			if statResult != nil {
+				jobResult.add(statResult)
+			} else if result != nil {
+				src = doc.ReaderSource(result.Reader())
+				jobResult.add(result)
+			}
 		}
 	}
 	jobResult.End()
@@ -73,6 +82,12 @@ func cleaner(job *Job, src *doc.Source) actFunc {
 func soda(job *Job, src *doc.Source) actFunc {
 	return func() (*act.StepResult, error) {
 		return act.SDRM(src, job.cookies)
+	}
+}
+
+func stat(job *Job, src *doc.Source) actFunc {
+	return func() (*act.StepResult, error) {
+		return act.Stat(src, job.RequestModSince())
 	}
 }
 

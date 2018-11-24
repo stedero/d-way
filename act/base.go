@@ -3,6 +3,7 @@ package act
 import (
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"time"
 
@@ -14,8 +15,10 @@ const defaultTimeoutSeconds = 10
 // StepResult the results of executing one step.
 type StepResult struct {
 	response *http.Response
+	content string
 	reader   io.ReadCloser
 	mimeType string
+	statusCode int
 }
 
 // TimedResult the result of executing one step with timing
@@ -60,9 +63,26 @@ func (stepResult *StepResult) MimeType() string {
 	return stepResult.mimeType
 }
 
+// StatusCode returns the HTTP status code.
+func (stepResult *StepResult) StatusCode() int {
+	if stepResult.statusCode > -1 {
+		return stepResult.statusCode
+	}
+	return stepResult.response.StatusCode
+}
+
+// Content get the content created by a step.
+func (stepResult *StepResult) Content() string {
+	if stepResult.response != nil {
+		result, _ := ioutil.ReadAll(stepResult.response.Body)
+		return string(result)
+	}
+	return stepResult.content
+}
+
 // NewStepResult creates a step result.
 func NewStepResult() *StepResult {
-	return &StepResult{}
+	return &StepResult{statusCode: -1}
 }
 
 // NewTimedResult creates a timed result.
@@ -76,6 +96,12 @@ func (stepResult *StepResult) SetReader(reader io.ReadCloser) *StepResult {
 	return stepResult
 }
 
+// SetContent set the step content.
+func (stepResult *StepResult) SetContent(ct string) *StepResult {
+	stepResult.content = ct
+	return stepResult
+}
+
 // SetResponse sets the HTTP response.
 func (stepResult *StepResult) SetResponse(response *http.Response) *StepResult {
 	stepResult.response = response
@@ -86,6 +112,12 @@ func (stepResult *StepResult) SetResponse(response *http.Response) *StepResult {
 // SetMimeType sets the mime type.
 func (stepResult *StepResult) SetMimeType(mimeType string) *StepResult {
 	stepResult.mimeType = mimeType
+	return stepResult
+}
+
+// SetStatusCode sets the status code.
+func (stepResult *StepResult) SetStatusCode(sc int) *StepResult {
+	stepResult.statusCode = sc
 	return stepResult
 }
 
@@ -107,6 +139,8 @@ func (timedResult *TimedResult) SetStepResult(stepResult *StepResult) *TimedResu
 	timedResult.response = stepResult.response
 	timedResult.reader = stepResult.reader
 	timedResult.mimeType = stepResult.mimeType
+	timedResult.statusCode = stepResult.statusCode
+	timedResult.content = stepResult.content
 	return timedResult
 }
 
