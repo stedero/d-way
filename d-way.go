@@ -55,7 +55,7 @@ func docHandler(matcher *rule.Matcher) http.HandlerFunc {
 				writer.Header().Set("Content-Type", jobResult.ContentType())
 				lastModifiedDate := jobResult.LastModifiedDate()
 				if lastModifiedDate != "" {
-					writer.Header().Set("Cache-Control", "No-Cache")
+					writer.Header().Set("Cache-Control", "max-age=0")
 					writer.Header().Set("Last-Modified", lastModifiedDate)
 				}
 				statusCode := jobResult.StatusCode()
