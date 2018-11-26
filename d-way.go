@@ -67,6 +67,7 @@ func docHandler(matcher *rule.Matcher, maxAgeHeader string) http.HandlerFunc {
 					}
 				}
 			}
+			logJobResult(jobResult)
 			log.Debug("end")
 		case "OPTIONS":
 			writer.Header().Set("Server", cfg.GetUserAgent())

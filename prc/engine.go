@@ -18,7 +18,6 @@ func Exec(job *Job, src *doc.Source) (*JobResult, error) {
 	for _, step := range job.rule.Steps {
 		if !jobResult.Done() {
 			statResult = nil
-			log.Debugf("executing %s", step)
 			switch step {
 			case "CLEAN":
 				result, err = exec(step, cleaner(job, src))
