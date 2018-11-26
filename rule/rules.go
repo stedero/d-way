@@ -27,6 +27,7 @@ type Matcher struct {
 	ResolveURL           string     `json:"resolve_url"`
 	SdrmURL              string     `json:"sdrm_url"`
 	XtojURL              string     `json:"xtoj_url"`
+	CacheMaxAgeSeconds   int        `json:"cache_max_age_seconds"`
 	Logging              *LogConfig `json:"logging"`
 	Rules                []*Rule    `json:"rules"`
 }

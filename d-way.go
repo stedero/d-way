@@ -26,12 +26,12 @@ func main() {
 	server := http.Server{Addr: ":" + cfg.GetPort()}
 	matcher := cfg.GetMatcher()
 	logMatcher(matcher)
-	http.HandleFunc("/", withCORS(docHandler(matcher)))
+	http.HandleFunc("/", withCORS(docHandler(matcher, fmt.Sprintf("max-age=%d", matcher.CacheMaxAgeSeconds))))
 	http.HandleFunc("/config/", withCORS(configHandler(cfg.GetConfigData())))
 	server.ListenAndServe()
 }
 
-func docHandler(matcher *rule.Matcher) http.HandlerFunc {
+func docHandler(matcher *rule.Matcher, maxAgeHeader string) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		switch request.Method {
 		case "GET":
@@ -55,7 +55,7 @@ func docHandler(matcher *rule.Matcher) http.HandlerFunc {
 				writer.Header().Set("Content-Type", jobResult.ContentType())
 				lastModifiedDate := jobResult.LastModifiedDate()
 				if lastModifiedDate != "" {
-					writer.Header().Set("Cache-Control", "max-age=0")
+					writer.Header().Set("Cache-Control", maxAgeHeader)
 					writer.Header().Set("Last-Modified", lastModifiedDate)
 				}
 				statusCode := jobResult.StatusCode()
