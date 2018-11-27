@@ -3,6 +3,7 @@ package rule
 import (
 	"encoding/json"
 	"regexp"
+	"strings"
 )
 
 // Rule defines a process rule.
@@ -44,11 +45,14 @@ func NewMatcher(data []byte) (*Matcher, error) {
 	return &matcher, err
 }
 
-// Match finds the first rule that matches a path.
+// Match finds the first rule that matches.
+// For mimeType to match a rule's mimetype it has to contain the
+// exact string as defined in the rule. No wildcard matching
+// is done.
 func (matcher *Matcher) Match(path, mimeType string) *Rule {
 	for _, rule := range matcher.Rules {
 		if rule.Regexc.Match([]byte(path)) {
-			if rule.MimeType == "" || mimeType == rule.MimeType {
+			if rule.MimeType == "" || strings.Contains(mimeType, rule.MimeType) {
 				return rule
 			}
 		}

@@ -42,31 +42,10 @@ func docHandler(matcher *rule.Matcher, maxAgeHeader string) http.HandlerFunc {
 			src := doc.StringSource(path)
 			job := prc.NewJob(rule, request.Cookies(), requestModSinceDate(request))
 			jobResult, err := prc.Exec(job, src)
-			if err != nil {
-				statusCode, msg := statusAndMessage(err)
-				writer.Header().Set("Server", cfg.GetUserAgent())
-				writer.Header().Set("Content-Type", "text/plain")
-				writer.WriteHeader(statusCode)
-				fmt.Fprintf(writer, msg)
-				log.Errorf("%d - %s", statusCode, msg)
+			if err == nil {
+				sendSuccess(jobResult, maxAgeHeader, writer)
 			} else {
-				writer.Header().Set("Allow", "GET, OPTIONS")
-				writer.Header().Set("Server", cfg.GetUserAgent())
-				writer.Header().Set("Content-Type", jobResult.ContentType())
-				lastModifiedDate := jobResult.LastModifiedDate()
-				if lastModifiedDate != "" {
-					writer.Header().Set("Cache-Control", maxAgeHeader)
-					writer.Header().Set("Last-Modified", lastModifiedDate)
-				}
-				statusCode := jobResult.StatusCode()
-				writer.WriteHeader(statusCode)
-				if statusCode != http.StatusNotModified {
-					err = output(writer, jobResult.Reader())
-					if err != nil {
-						log.Errorf("error %v", err)
-					}
-				}
-				logJobResult(jobResult)
+				sendError(err, writer)
 			}
 			log.Debugf("rule %s took: %v", rule.Name, total())
 		case "OPTIONS":
@@ -76,6 +55,35 @@ func docHandler(matcher *rule.Matcher, maxAgeHeader string) http.HandlerFunc {
 		default:
 		}
 	}
+}
+
+func sendError(err error, writer http.ResponseWriter) {
+	statusCode, msg := statusAndMessage(err)
+	writer.Header().Set("Server", cfg.GetUserAgent())
+	writer.Header().Set("Content-Type", "text/plain")
+	writer.WriteHeader(statusCode)
+	fmt.Fprintf(writer, msg)
+	log.Errorf("%d - %s", statusCode, msg)
+}
+
+func sendSuccess(jobResult *prc.JobResult, maxAgeHeader string, writer http.ResponseWriter) {
+	writer.Header().Set("Allow", "GET, OPTIONS")
+	writer.Header().Set("Server", cfg.GetUserAgent())
+	writer.Header().Set("Content-Type", jobResult.ContentType())
+	lastModifiedDate := jobResult.LastModifiedDate()
+	if lastModifiedDate != "" {
+		writer.Header().Set("Cache-Control", maxAgeHeader)
+		writer.Header().Set("Last-Modified", lastModifiedDate)
+	}
+	statusCode := jobResult.StatusCode()
+	writer.WriteHeader(statusCode)
+	if statusCode != http.StatusNotModified {
+		err := output(writer, jobResult.Reader())
+		if err != nil {
+			log.Errorf("error %v", err)
+		}
+	}
+	logJobResult(jobResult)
 }
 
 func statusAndMessage(err error) (int, string) {
