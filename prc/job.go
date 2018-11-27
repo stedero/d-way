@@ -20,7 +20,6 @@ type Job struct {
 type JobResult struct {
 	steps            []*act.TimedResult
 	last             *act.TimedResult
-	total            *act.TimedResult
 	lastModifiedDate string
 	stopJob          bool
 }
@@ -33,16 +32,6 @@ func NewJob(r *rule.Rule, cookies []*http.Cookie, reqModSince *time.Time) *Job {
 // NewJobResult creates a job result.
 func NewJobResult(stepCount int) *JobResult {
 	return &JobResult{steps: make([]*act.TimedResult, 0, stepCount)}
-}
-
-// Start starts the job time.
-func (jobResult *JobResult) Start() {
-	jobResult.total = act.NewTimedResult("Total").Start()
-}
-
-// End stops the job timer.
-func (jobResult *JobResult) End() {
-	jobResult.total.End()
 }
 
 // Done determines whether the job is finished
@@ -106,9 +95,4 @@ func (jobResult *JobResult) Response() *http.Response {
 // Steps returns the steps that where executed.
 func (jobResult *JobResult) Steps() []*act.TimedResult {
 	return jobResult.steps
-}
-
-// Total returns the job execution result.
-func (jobResult *JobResult) Total() *act.TimedResult {
-	return jobResult.total
 }

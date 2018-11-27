@@ -13,7 +13,6 @@ func Exec(job *Job, src *doc.Source) (*JobResult, error) {
 	var result *act.TimedResult
 	var err error
 	jobResult := NewJobResult(len(job.rule.Steps))
-	jobResult.Start()
 	var statResult *act.TimedResult
 	for _, step := range job.rule.Steps {
 		if !jobResult.Done() {
@@ -45,7 +44,6 @@ func Exec(job *Job, src *doc.Source) (*JobResult, error) {
 			}
 		}
 	}
-	jobResult.End()
 	return jobResult, err
 }
 

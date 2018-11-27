@@ -7,6 +7,7 @@ import (
 
 // Rule defines a process rule.
 type Rule struct {
+	Name     string `json:"name"`
 	Regex    string `json:"regex"`
 	Regexc   *regexp.Regexp
 	MimeType string   `json:"mimeType"`

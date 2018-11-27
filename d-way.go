@@ -35,7 +35,7 @@ func docHandler(matcher *rule.Matcher, maxAgeHeader string) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		switch request.Method {
 		case "GET":
-			log.Debug("start")
+			total := timer()
 			path := cleanPath(request.URL.Path)
 			mimeType := request.Header.Get("Accept")
 			rule := matcher.Match(path, mimeType)
@@ -66,9 +66,9 @@ func docHandler(matcher *rule.Matcher, maxAgeHeader string) http.HandlerFunc {
 						log.Errorf("error %v", err)
 					}
 				}
+				logJobResult(jobResult)
 			}
-			logJobResult(jobResult)
-			log.Debug("end")
+			log.Debugf("rule %s took: %v", rule.Name, total())
 		case "OPTIONS":
 			writer.Header().Set("Server", cfg.GetUserAgent())
 			writer.Header().Set("Allow", "GET, OPTIONS")
@@ -130,6 +130,13 @@ func cleanPath(path string) string {
 	return strings.TrimSuffix(strings.TrimPrefix(path, pathPrefix), "/")
 }
 
+func timer() func() time.Duration {
+	start := time.Now()
+	return func() time.Duration {
+		return time.Now().Sub(start)
+	}
+}
+
 func logMatcher(matcher *rule.Matcher) {
 	log.Debugf("%s", matcher.Comment)
 	log.Debug("rules:")
@@ -166,8 +173,6 @@ func logResponse(r *http.Response) {
 
 func logJobResult(jobResult *prc.JobResult) {
 	for _, result := range jobResult.Steps() {
-		log.Debugf("%s took %s\n", result.Step, result.Duration)
+		log.Debugf("step %s took %s\n", result.Step, result.Duration)
 	}
-	total := jobResult.Total()
-	log.Debugf("%s took %s\n", total.Step, total.Duration)
 }

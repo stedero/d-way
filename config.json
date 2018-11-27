@@ -12,7 +12,8 @@
     },
     "rules": [
         {
-            "regex": "/data/.*/html/.*\\.html",
+            "name": "HTML",
+            "regex": "/(data|collections)/.*/html/.*\\.html",
             "steps": [
                 "STAT",
                 "GET",
@@ -20,20 +21,14 @@
             ]
         },
         {
-            "regex": "/collections/.*/html/.*\\.html",
-            "steps": [
-                "STAT",
-                "GET",
-                "CLEAN"
-            ]
-        },
-        {
+            "name": "PDF",
             "regex": "/data/tns/docs/printversion/pdf/.*\\.pdf",
             "steps": [
                 "SDRM"
             ]
         },
         {
+            "name": "LINKRESOLVER",
             "regex": "/linkresolver/static/.*",
             "steps": [
                 "RESOLVE",
@@ -43,6 +38,7 @@
             ]
         },
         {
+            "name": "XTOJ1",
             "regex": "^/(data|collections)/.*/xml/.*\\.xml$",
             "mimeType": "application/json",
             "steps": [
@@ -51,6 +47,7 @@
             ]
         },
         {
+            "name": "XTOJ2",
             "regex": "^/(data|collections)/.*/xml/.*\\.json$",
             "steps": [
                 "STAT",
@@ -58,6 +55,7 @@
             ]
         },
         {
+            "name": "DOCUMENT",
             "regex": "/document/.*",
             "steps": [
                 "RESOLVE",
@@ -67,6 +65,7 @@
             ]
         },
         {
+            "name": "OTHER",
             "regex": ".*",
             "steps": [
                 "STAT",
