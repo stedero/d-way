@@ -26,6 +26,7 @@ type Matcher struct {
 	Comment              string     `json:"comment"`
 	PublicationsBasePath string     `json:"publications_base_path"`
 	CleanURL             string     `json:"clean_url"`
+	OtccURL              string     `json:"otcc_url"`
 	ResolveURL           string     `json:"resolve_url"`
 	SdrmURL              string     `json:"sdrm_url"`
 	XtojURL              string     `json:"xtoj_url"`

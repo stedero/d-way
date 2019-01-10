@@ -22,6 +22,8 @@ func Exec(job *Job, src *doc.Source) (*JobResult, error) {
 				result, err = exec(step, cleaner(job, src))
 			case "GET":
 				result, err = exec(step, getter(src))
+			case "OTCC":
+				result, err = exec(step, otcc(job, src))
 			case "RESOLVE":
 				result, err = exec(step, resolver(src))
 			case "SDRM":
@@ -73,6 +75,12 @@ func getter(src *doc.Source) actFunc {
 func cleaner(job *Job, src *doc.Source) actFunc {
 	return func() (*act.StepResult, error) {
 		return act.Clean(src, job.cookies)
+	}
+}
+
+func otcc(job *Job, src *doc.Source) actFunc {
+	return func() (*act.StepResult, error) {
+		return act.OTCC(src, job.cookies)
 	}
 }
 
