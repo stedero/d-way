@@ -1,10 +1,10 @@
 package act
 
 import (
-	"net/http"
 	"fmt"
 	"ibfd.org/d-way/cfg"
 	"ibfd.org/d-way/doc"
+	"net/http"
 )
 
 // ActionSDRM defines the action that adds Social DRM statement to a document
@@ -34,7 +34,7 @@ func SDRM(document *doc.Source, cookies []*http.Cookie) (*StepResult, error) {
 	if resp.StatusCode != http.StatusOK {
 		return nil, &ActionError{resp.StatusCode, fmt.Sprintf("failed to add social DRM to %s", document.Path())}
 	}
-	return NewStepResult().SetResponse(resp), err
+	return NewContentResult().SetResponse(resp), err
 }
 
 func (action *ActionSDRM) target(path string) string {

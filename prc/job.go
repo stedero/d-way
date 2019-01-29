@@ -82,6 +82,11 @@ func (jobResult *JobResult) StatusCode() int {
 	return jobResult.last.StatusCode()
 }
 
+// ResultType returns the result type.
+func (jobResult *JobResult) ResultType() act.ResultType {
+	return jobResult.last.ResultType()
+}
+
 // RequestModSince returns the value of the request header If-modified-since.
 func (job *Job) RequestModSince() *time.Time {
 	return job.reqModSince

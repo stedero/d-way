@@ -69,6 +69,24 @@ func sendError(err error, writer http.ResponseWriter) {
 func sendSuccess(jobResult *prc.JobResult, maxAgeHeader string, writer http.ResponseWriter) {
 	writer.Header().Set("Allow", "GET, OPTIONS")
 	writer.Header().Set("Server", cfg.GetUserAgent())
+	switch jobResult.ResultType() {
+	case act.Action:
+		sendAction(jobResult, writer)
+	case act.Content:
+		sendContent(jobResult, maxAgeHeader, writer)
+	}
+	logJobResult(jobResult)
+}
+
+func sendAction(jobResult *prc.JobResult, writer http.ResponseWriter) {
+	statusCode := jobResult.StatusCode()
+	if statusCode == http.StatusFound {
+		writer.Header().Set("Location", jobResult.Content())
+	}
+	writer.WriteHeader(statusCode)
+}
+
+func sendContent(jobResult *prc.JobResult, maxAgeHeader string, writer http.ResponseWriter) {
 	writer.Header().Set("Content-Type", jobResult.ContentType())
 	lastModifiedDate := jobResult.LastModifiedDate()
 	if lastModifiedDate != "" {
@@ -83,7 +101,6 @@ func sendSuccess(jobResult *prc.JobResult, maxAgeHeader string, writer http.Resp
 			log.Errorf("error %v", err)
 		}
 	}
-	logJobResult(jobResult)
 }
 
 func statusAndMessage(err error) (int, string) {

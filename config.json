@@ -31,10 +31,7 @@
             "name": "LINKRESOLVER",
             "regex": "/linkresolver/static/.*",
             "steps": [
-                "RESOLVE",
-                "STAT",
-                "GET",
-                "CLEAN"
+                "RESOLVE"
             ]
         },
         {

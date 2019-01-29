@@ -37,7 +37,7 @@ func Stat(document *doc.Source, reqModSince *time.Time) (*StepResult, error) {
 	modTimeStr := finfo.ModTime().Format(cfg.LastModifiedDateFormat)
 	modTime, _ := time.Parse(cfg.LastModifiedDateFormat, modTimeStr)
 	statusCode := statusCode(modTime, reqModSince)
-	return NewStepResult().SetContent(modTimeStr).SetStatusCode(statusCode), err
+	return NewContentResult().SetContent(modTimeStr).SetStatusCode(statusCode), err
 }
 
 func (action *ActionStat) target(path string) string {

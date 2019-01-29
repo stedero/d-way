@@ -35,7 +35,7 @@ func OTCC(document *doc.Source, cookies []*http.Cookie) (*StepResult, error) {
 	if resp.StatusCode != http.StatusOK {
 		return nil, &ActionError{resp.StatusCode, fmt.Sprintf("failed to call OTCC for %s", document.Path())}
 	}
-	return NewStepResult().SetResponse(resp), err
+	return NewContentResult().SetResponse(resp), err
 }
 
 func (action *ActionOTCC) target(path string) string {

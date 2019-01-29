@@ -12,12 +12,23 @@ import (
 
 const defaultTimeoutSeconds = 10
 
+// ResultType indicates whether the result contains content or an action such as redirect.
+type ResultType int
+
+const (
+	// Content result type
+	Content ResultType = iota
+	// Action result type
+	Action
+)
+
 // StepResult the results of executing one step.
 type StepResult struct {
-	response *http.Response
-	content string
-	reader   io.ReadCloser
-	mimeType string
+	resultType ResultType
+	response   *http.Response
+	content    string
+	reader     io.ReadCloser
+	mimeType   string
 	statusCode int
 }
 
@@ -80,9 +91,19 @@ func (stepResult *StepResult) Content() string {
 	return stepResult.content
 }
 
-// NewStepResult creates a step result.
-func NewStepResult() *StepResult {
-	return &StepResult{statusCode: -1}
+// ResultType get the result type.
+func (stepResult *StepResult) ResultType() ResultType {
+	return stepResult.resultType
+}
+
+// NewContentResult creates a step result.
+func NewContentResult() *StepResult {
+	return &StepResult{statusCode: -1, resultType: Content}
+}
+
+// NewActionResult creates a step result.
+func NewActionResult() *StepResult {
+	return &StepResult{statusCode: -1, resultType: Action}
 }
 
 // NewTimedResult creates a timed result.

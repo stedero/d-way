@@ -36,7 +36,7 @@ func XTOJ(document *doc.Source, cookies []*http.Cookie) (*StepResult, error) {
 	if resp.StatusCode != http.StatusOK {
 		return nil, &ActionError{resp.StatusCode, fmt.Sprintf("failed to get JSON for %s", document.Path())}
 	}
-	return NewStepResult().SetResponse(resp), err
+	return NewContentResult().SetResponse(resp), err
 }
 
 func (action *ActionXTOJ) target(document *doc.Source) string {

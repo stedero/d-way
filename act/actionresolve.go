@@ -37,7 +37,7 @@ func Resolve(src *doc.Source) (*StepResult, error) {
 	if resp.StatusCode != http.StatusOK {
 		return nil, &ActionError{resp.StatusCode, fmt.Sprintf("failed to resolve UID: %s", uid)}
 	}
-	return NewStepResult().SetResponse(resp), err
+	return NewActionResult().SetResponse(resp).SetStatusCode(http.StatusFound), err
 }
 
 func uid(src *doc.Source) string {

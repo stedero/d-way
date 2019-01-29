@@ -33,5 +33,5 @@ func Clean(src *doc.Source, cookies []*http.Cookie) (*StepResult, error) {
 	if resp.StatusCode != http.StatusOK {
 		return nil, &ActionError{resp.StatusCode, "failed to sanitize document"}
 	}
-	return NewStepResult().SetResponse(resp), err
+	return NewContentResult().SetResponse(resp), err
 }
