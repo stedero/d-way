@@ -162,6 +162,7 @@ func (timedResult *TimedResult) SetStepResult(stepResult *StepResult) *TimedResu
 	timedResult.mimeType = stepResult.mimeType
 	timedResult.statusCode = stepResult.statusCode
 	timedResult.content = stepResult.content
+	timedResult.resultType = stepResult.resultType
 	return timedResult
 }
 
