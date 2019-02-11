@@ -163,15 +163,16 @@ func timer() func() time.Duration {
 }
 
 func logMatcher(matcher *rule.Matcher) {
-	log.Debugf("%s", matcher.Comment)
-	log.Debug("rules:")
+	log.Infof("%s", matcher.Comment)
+	log.Infof("rules:")
 	for i, rule := range matcher.Rules {
-		log.Debugf("\trule[%d]:", i)
-		log.Debugf("\t\tregex: %s", rule.Regex)
+		log.Infof("\trule[%d]:", i)
+		log.Infof("\t\tname : %s", rule.Name)
+		log.Infof("\t\tregex: %s", rule.Regex)
 		if rule.MimeType != "" {
-			log.Debugf("\t\tmimeType: %s", rule.MimeType)
+			log.Infof("\t\tmimeType: %s", rule.MimeType)
 		}
-		log.Debugf("\t\tsteps: %s", strings.Join(rule.Steps, ", "))
+		log.Infof("\t\tsteps: %s", strings.Join(rule.Steps, ", "))
 	}
 }
 
