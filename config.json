@@ -3,7 +3,7 @@
     "publications_base_path": "/Users/rooi/Desktop/d-way",
     "clean_url": "http://development6.ibfd.org:9997/",
     "resolve_url": "https://dev-research.ibfd.org/linkresolver/resolve",
-    "sdrm_url": "https://dev-research.ibfd.org/soda",
+    "sdrm_url": "http://dev-research.ibfd.org/soda",
     "xtoj_url": "http://localhost:4567",
     "cache_max_age_seconds": 0,
     "logging": {
@@ -11,6 +11,13 @@
         "level": "DEBUG"
     },
     "rules": [
+        {
+            "name": "LINKRESOLVER",
+            "regex": "/(document|linkresolver/static)/.+",
+            "steps": [
+                "RESOLVE"
+            ]
+        },
         {
             "name": "HTML",
             "regex": "/(archive|data|collections)/.*/html/.*\\.html",
@@ -21,17 +28,46 @@
             ]
         },
         {
-            "name": "PDF",
-            "regex": "/data/tns/docs/printversion/pdf/.*\\.pdf",
+            "name": "PDF1",
+            "regex": "/collections/(eulaw|ftn|oecd|tni)/pdf/.*\\.pdf",
+            "steps": [
+                "STAT",
+                "GET"
+            ]
+        },
+        {
+            "name": "PDF2",
+            "regex": "/collections/[^/]+/pdf/.*\\.pdf",
             "steps": [
                 "SDRM"
             ]
         },
         {
-            "name": "LINKRESOLVER",
-            "regex": "/linkresolver/static/.*",
+            "name": "PDF3",
+            "regex": "/data/(tns|treaty)/docs/pdf/.*\\.pdf",
             "steps": [
-                "RESOLVE"
+                "SDRM"
+            ]
+        },
+        {
+            "name": "PDF4",
+            "regex": "/collections/[^/]+/docs/printversion/pdf/.*\\.pdf",
+            "steps": [
+                "SDRM"
+            ]
+        },
+        {
+            "name": "PDF5",
+            "regex": "/data/.*/docs/printversion/pdf/.*\\.pdf",
+            "steps": [
+                "SDRM"
+            ]
+        },
+        {
+            "name": "EXCEL",
+            "regex": "/collections/.*/excel/.*\\.xls",
+            "steps": [
+                "SDRM"
             ]
         },
         {
@@ -49,20 +85,6 @@
             "steps": [
                 "STAT",
                 "XTOJ"
-            ]
-        },
-        {
-            "name": "DOCUMENT",
-            "regex": "/document/.*",
-            "steps": [
-                "RESOLVE"
-            ]
-        },
-        {
-            "name": "EXCEL",
-            "regex": "/collections/.*/excel/.*\\.xls",
-            "steps": [
-                "SDRM"
             ]
         },
         {
