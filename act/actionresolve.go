@@ -42,5 +42,5 @@ func Resolve(src *doc.Source) (*StepResult, error) {
 
 func uid(src *doc.Source) string {
 	parts := strings.Split(src.String(), "/")
-	return parts[len(parts)-1]
+	return strings.Split(parts[len(parts)-1], "#")[0]
 }
