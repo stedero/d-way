@@ -37,7 +37,7 @@
         },
         {
             "name": "PDF2",
-            "regex": "/collections/[^/]+/pdf/.*\\.pdf",
+            "regex": "/collections/[^/]+/(chunk_pdf|pdf)/.*\\.pdf",
             "steps": [
                 "SDRM"
             ]
@@ -59,6 +59,13 @@
         {
             "name": "PDF5",
             "regex": "/data/.*/docs/printversion/pdf/.*\\.pdf",
+            "steps": [
+                "SDRM"
+            ]
+        },
+        {
+            "name": "PDF6",
+            "regex": "/collections/[^/]+/printversion/(chunk_)?pdf/.*\\.pdf",
             "steps": [
                 "SDRM"
             ]

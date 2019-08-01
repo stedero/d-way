@@ -50,6 +50,9 @@ func init() {
 		Test{"/banana/tns/docs/printversion/pdf/tns_2019-01-25_ar_1.pdf", "OTHER"},
 		Test{"/data/tns/docs/printversion/pdf/tns_2019-01-25_ar_1.pdf", "PDF5"},
 
+		Test{"/collections/vatst/printversion/chunk_pdf/doc1.pdf", "PDF6"},
+		Test{"/collections/vatst/printversion/pdf/doc1.pdf", "PDF6"},
+
 		Test{"/collections/kf/excel/kf_dz.xls", "EXCEL"},
 		Test{"/collections//excel/kf_dz.xls", "EXCEL"}}
 }
