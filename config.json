@@ -31,43 +31,42 @@
             "name": "PDF1",
             "regex": "/collections/(eulaw|ftn|oecd|tni)/pdf/.*\\.pdf",
             "steps": [
-                "STAT",
-                "GET"
+                "FORBID"
             ]
         },
         {
             "name": "PDF2",
             "regex": "/collections/[^/]+/(chunk_pdf|pdf)/.*\\.pdf",
             "steps": [
-                "SDRM"
+                "FORBID"
             ]
         },
         {
             "name": "PDF3",
             "regex": "/data/(tns|treaty)/docs/pdf/.*\\.pdf",
             "steps": [
-                "SDRM"
+                "FORBID"
             ]
         },
         {
             "name": "PDF4",
             "regex": "/collections/[^/]+/docs/printversion/pdf/.*\\.pdf",
             "steps": [
-                "SDRM"
+                "FORBID"
             ]
         },
         {
             "name": "PDF5",
             "regex": "/data/.*/docs/printversion/pdf/.*\\.pdf",
             "steps": [
-                "SDRM"
+                "FORBID"
             ]
         },
         {
             "name": "PDF6",
             "regex": "/collections/[^/]+/printversion/(chunk_)?pdf/.*\\.pdf",
             "steps": [
-                "SDRM"
+                "FORBID"
             ]
         },
         {

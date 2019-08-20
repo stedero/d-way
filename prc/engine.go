@@ -20,6 +20,8 @@ func Exec(job *Job, src *doc.Source) (*JobResult, error) {
 			switch step {
 			case "CLEAN":
 				result, err = exec(step, cleaner(job, src))
+			case "FORBID":
+				result, err = exec(step, forbidder(src))
 			case "GET":
 				result, err = exec(step, getter(src))
 			case "OTCC":
@@ -63,6 +65,12 @@ func exec(step string, action actFunc) (*act.TimedResult, error) {
 func resolver(src *doc.Source) actFunc {
 	return func() (*act.StepResult, error) {
 		return act.Resolve(src)
+	}
+}
+
+func forbidder(src *doc.Source) actFunc {
+	return func() (*act.StepResult, error) {
+		return act.Forbid(src)
 	}
 }
 
